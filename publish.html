@@ -74,6 +74,12 @@
     <a href="/publish.html" style="color: white;">近期发布</a>
     <a href="/niutijin.html" style="color: white;">🐮 牛蹄筋专栏</a>
 </div>
+    <!-- 搜索框 -->
+<div style="margin: 20px 0; text-align: center;">
+    <input type="text" id="searchInput" placeholder="🔍 搜索近期发布内容..." style="width: 70%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd;">
+    <button onclick="searchPage()" style="padding: 12px 25px; background: #ff6600; color: white; border: none; border-radius: 30px;">搜索</button>
+    <button onclick="clearSearch()" style="padding: 12px 25px; background: #999; color: white; border: none; border-radius: 30px;">清除</button>
+</div>
 
 <h1>📰 近期发布</h1>
 
@@ -161,6 +167,25 @@
 
 <hr>
 <p>© 2026 Xwñf</p>
-
+    
+<script>
+function searchPage() {
+    let input = document.getElementById('searchInput').value;
+    if (!input) return;
+    let regex = new RegExp(`(${input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    document.body.innerHTML = document.body.innerHTML.replace(regex, `<mark style="background:#ffeb3b;">$1</mark>`);
+    let firstMark = document.querySelector('mark');
+    if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else alert('未找到："' + input + '"');
+}
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('mark').forEach(mark => {
+        let parent = mark.parentNode;
+        parent.replaceChild(document.createTextNode(mark.textContent), mark);
+        parent.normalize();
+    });
+}
+</script>
 </body>
 </html>
