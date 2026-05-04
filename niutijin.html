@@ -116,6 +116,26 @@
     </div>
 </li>
 </ul>
+   <!-- 点赞区 -->
+<div style="text-align: center; margin: 30px 0; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+    <h3 style="margin-bottom: 15px;">❤️ 觉得不错？点个赞吧！</h3>
+    <div id="gitmentContainer"></div>
+</div>
+
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+    var gitment = new Gitment({
+        id: location.pathname,
+        owner: 'qwertty666',
+        repo: 'qwertty666.github.io',
+        oauth: {
+            client_id: '0v231ij2vXWR3BBhJsve',
+            client_secret: 'f6577ac86d975a9e364ae086c948e2c9c54af6d1'
+        }
+    })
+    gitment.render('gitmentContainer')
+</script>
 
 <hr>
 <p>© 2026 Xwñf</p>
