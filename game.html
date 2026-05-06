@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>猜数字游戏 - 全球观察</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .nav {
+            background-color: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 8px 16px;
+        }
+        .nav a:hover {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .guess-area {
+            margin: 30px 0;
+        }
+        #guessInput {
+            width: 200px;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+        }
+        #guessInput:focus {
+            border-color: #667eea;
+        }
+        button {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background: #5a67d8;
+        }
+        .reset-btn {
+            background: #ff6600;
+        }
+        .reset-btn:hover {
+            background: #e05500;
+        }
+        #gameMessage {
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .win {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .lose {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background-color: #e2f0ff;
+            color: #004085;
+        }
+        .attempt-info {
+            font-size: 16px;
+            color: #666;
+            margin: 15px 0;
+        }
+        hr {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="nav">
+    <a href="/">首页</a>
+    <a href="/about.html">关于我们</a>
+    <a href="/publish.html">近期发布</a>
+    <a href="/contact.html">联系我们</a>
+    <a href="/niutijin.html">🐮 牛蹄筋专栏</a>
+    <a href="/game.html" style="color: #ffcc00;">🎮 小游戏</a>
+</div>
+
+<div class="game-container">
+    <h1>🎮 猜数字游戏</h1>
+    <p class="subtitle">我已经想好了一个 1-100 之间的数字，你有 6 次机会猜中它！</p>
+    
+    <div class="guess-area">
+        <input type="number" id="guessInput" placeholder="输入数字" min="1" max="100">
+        <button onclick="checkGuess()">🔍 猜！</button>
+    </div>
+    
+    <div id="gameMessage">✨ 输入数字开始游戏</div>
+    <div class="attempt-info" id="attemptCount"></div>
+    
+    <button class="reset-btn" onclick="resetGame()">🔄 新游戏</button>
+</div>
+
+<hr>
+<p style="text-align: center; color: white;">© 2026 Xwift 全球观察</p>
+
+<script>
+// 游戏变量
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let attempts = 0;
+let maxAttempts = 6;
+
+function updateDisplay() {
+    let remaining = maxAttempts - attempts;
+    document.getElementById('attemptCount').innerHTML = `📊 剩余机会：${remaining} 次`;
+    let messageDiv = document.getElementById('gameMessage');
+    
+    if (remaining <= 0 && messageDiv.innerHTML.indexOf('恭喜') === -1) {
+        messageDiv.innerHTML = `😭 游戏结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
+        messageDiv.className = 'lose';
+        document.getElementById('guessInput').disabled = true;
+    }
+}
+
+function checkGuess() {
+    let input = document.getElementById('guessInput');
+    let guess = parseInt(input.value);
+    let messageDiv = document.getElementById('gameMessage');
+    
+    if (isNaN(guess) || guess < 1 || guess > 100) {
+        messageDiv.innerHTML = '⚠️ 请输入 1-100 之间的数字！';
+        messageDiv.className = 'info';
+        return;
+    }
+    
+    if (attempts >= maxAttempts) {
+        messageDiv.innerHTML = `比赛已结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
+        messageDiv.className = 'lose';
+        return;
+    }
+    
+    attempts++;
+    
+    if (guess === secretNumber) {
+        messageDiv.innerHTML = '🎉 恭喜！猜对了！ 🎉';
+        messageDiv.className = 'win';
+        document.getElementById('guessInput').disabled = true;
+        updateDisplay();
+        return;
+    } else if (guess < secretNumber) {
+        messageDiv.innerHTML = `📈 ${guess} 太小了，再大一点！`;
+        messageDiv.className = 'info';
+    } else {
+        messageDiv.innerHTML = `📉 ${guess} 太大了，再小一点！`;
+        messageDiv.className = 'info';
+    }
+    
+    if (attempts >= maxAttempts) {
+        messageDiv.innerHTML = `😭 游戏结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
+        messageDiv.className = 'lose';
+        document.getElementById('guessInput').disabled = true;
+    }
+    
+    updateDisplay();
+    input.value = '';
+    input.focus();
+}
+
+function resetGame() {
+    secretNumber = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+    let input = document.getElementById('guessInput');
+    input.disabled = false;
+    input.value = '';
+    document.getElementById('gameMessage').innerHTML = '✨ 新游戏开始！猜一个 1-100 之间的数字';
+    document.getElementById('gameMessage').className = 'info';
+    updateDisplay();
+    input.focus();
+}
+
+updateDisplay();
+</script>
+
+</body>
+</html>
