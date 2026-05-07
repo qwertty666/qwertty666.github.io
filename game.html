@@ -296,6 +296,15 @@
     function hitMole(index, imgElement) {
         if (!gameActive) return;
         if (!activeHoles.includes(index)) return;
+        function hitMole(index, imgElement) {
+    if (!gameActive) return;
+    if (!activeHoles.includes(index)) return;
+    
+    // 📳 手机震动反馈
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);  // 震动 50 毫秒
+    }
+   
         
         // 加分
         score++;
