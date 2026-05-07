@@ -288,7 +288,7 @@
             if (gameActive && activeHoles.includes(index)) {
                 removeMoleFromHole(index);
             }
-        }, 1800);
+        }, 800);
         moleTimeouts.push(timeout);
     }
 
@@ -357,7 +357,7 @@
         moleGenerator = setInterval(() => {
             if (!gameActive) return;
             // 控制最多同时出现3只
-            if (activeHoles.length >= 3) return;
+            if (activeHoles.length >= 1) return;
             let available = [];
             for (let i = 0; i < 9; i++) {
                 if (!activeHoles.includes(i)) available.push(i);
