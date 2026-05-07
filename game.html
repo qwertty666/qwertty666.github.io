@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>猜数字游戏 - 全球观察</title>
+    <title>小游戏</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
+            max-width: 900px;
+            margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a472a, #2d5a3b);
             min-height: 100vh;
         }
         .nav {
-            background-color: rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
+            background-color: #333;
             padding: 15px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .nav a {
             color: white;
@@ -27,194 +29,419 @@
             padding: 8px 16px;
         }
         .nav a:hover {
-            background-color: rgba(255,255,255,0.2);
+            background-color: #555;
             border-radius: 5px;
         }
         .game-container {
-            background: rgba(255,255,255,0.95);
+            background: #8B6914;
             border-radius: 20px;
-            padding: 40px 30px;
+            padding: 20px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         h1 {
-            color: #667eea;
-            margin-bottom: 15px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 10px;
         }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .guess-area {
-            margin: 30px 0;
-        }
-        #guessInput {
-            width: 200px;
+        .score-board {
+            background: #2c2c2c;
             padding: 15px;
-            font-size: 18px;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 50px;
-            outline: none;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
         }
-        #guessInput:focus {
-            border-color: #667eea;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .hole {
+            background: radial-gradient(circle at 30% 30%, #4a2a0a, #2a1a05);
+            border-radius: 50%;
+            padding: 15px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: inset 0 8px 12px rgba(0,0,0,0.6), 0 5px 5px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .mole-img {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            position: absolute;
+            bottom: -100%;
+            left: 5%;
+            transition: bottom 0.12s ease-out;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .mole-img.show {
+            bottom: 5%;
+        }
+        .mole-img.hide-down {
+            bottom: -100%;
+            transition: bottom 0.1s ease-in;
+        }
+        .empty-placeholder {
+            width: 80%;
+            height: 80%;
+            background: #3e2710;
+            border-radius: 50%;
         }
         button {
-            padding: 12px 25px;
-            background: #667eea;
+            background: #FF6600;
             color: white;
             border: none;
-            border-radius: 50px;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-            transition: transform 0.2s;
+            margin: 10px;
         }
         button:hover {
-            transform: scale(1.05);
-            background: #5a67d8;
+            background: #ff8833;
         }
-        .reset-btn {
-            background: #ff6600;
+        .timer {
+            font-size: 28px;
+            color: #fff;
         }
-        .reset-btn:hover {
-            background: #e05500;
-        }
-        #gameMessage {
-            margin: 20px 0;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        .win {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .lose {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .info {
-            background-color: #e2f0ff;
-            color: #004085;
-        }
-        .attempt-info {
-            font-size: 16px;
-            color: #666;
-            margin: 15px 0;
-        }
-        hr {
-            margin: 30px 0;
+        @keyframes bounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-<!-- 导航栏 -->
 <div class="nav">
     <a href="/">首页</a>
     <a href="/about.html">关于我们</a>
     <a href="/publish.html">近期发布</a>
     <a href="/contact.html">联系我们</a>
-    <a href="/niutijin.html">🐮 牛蹄筋专栏</a>
+    <a href="/niutijin.html" style="color: #ffcc00;">🐮 牛蹄筋专栏</a>
     <a href="/game.html" style="color: #ffcc00;">🎮 小游戏</a>
 </div>
 
 <div class="game-container">
-    <h1>🎮 猜数字游戏</h1>
-    <p class="subtitle">我已经想好了一个 1-100 之间的数字，你有 6 次机会猜中它！</p>
-    
-    <div class="guess-area">
-        <input type="number" id="guessInput" placeholder="输入数字" min="1" max="100">
-        <button onclick="checkGuess()">🔍 猜！</button>
+    <h1>🎯 打地鼠游戏 🎯</h1>
+    <div class="score-board">
+        <span>🐭 王茂钢特供版</span>
+        <span>得分: <span id="score">0</span></span>
+        <span>⏱️ 剩余: <span id="timer">30</span>秒</span>
     </div>
     
-    <div id="gameMessage">✨ 输入数字开始游戏</div>
-    <div class="attempt-info" id="attemptCount"></div>
+    <div class="grid" id="grid"></div>
     
-    <button class="reset-btn" onclick="resetGame()">🔄 新游戏</button>
+    <div>
+        <button onclick="startGame()">🚀 开始游戏</button>
+        <button onclick="resetGame()">🔄 重置</button>
+    </div>
+    <p style="color: #ddd; margin-top: 15px;">💡 点击冒出来的头像打地鼠！打中会变脸 💡</p>
 </div>
 
-<hr>
-<p style="text-align: center; color: white;">© 2026 Xwñf</p>
-
 <script>
-// 游戏变量
-let secretNumber = Math.floor(Math.random() * 100) + 1;
-let attempts = 0;
-let maxAttempts = 6;
+    // ===== 替换成你上传的图片链接 =====
+    const NORMAL_IMG = "https://raw.githubusercontent.com/qwertty666/qwertty666.github.io/main/CC4B146425F7DD0E59BE6EA1FEEB2470.png";
+    const HIT_IMG = "https://raw.githubusercontent.com/qwertty666/qwertty666.github.io/main/1CC8CAAE38A7790104FED8DCB5A9D487.png";
+    // =================================
 
-function updateDisplay() {
-    let remaining = maxAttempts - attempts;
-    document.getElementById('attemptCount').innerHTML = `📊 剩余机会：${remaining} 次`;
-    let messageDiv = document.getElementById('gameMessage');
-    
-    if (remaining <= 0 && messageDiv.innerHTML.indexOf('恭喜') === -1) {
-        messageDiv.innerHTML = `😭 游戏结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
-        messageDiv.className = 'lose';
-        document.getElementById('guessInput').disabled = true;
-    }
-}
+    let score = 0;
+    let timeLeft = 30;
+    let gameActive = false;
+    let gameInterval = null;
+    let activeHoles = [];       // 当前地鼠所在的洞索引
+    let holeElements = [];
+    let moleTimeouts = [];      // 每个地鼠的自动消失定时器
 
-function checkGuess() {
-    let input = document.getElementById('guessInput');
-    let guess = parseInt(input.value);
-    let messageDiv = document.getElementById('gameMessage');
-    
-    if (isNaN(guess) || guess < 1 || guess > 100) {
-        messageDiv.innerHTML = '⚠️ 请输入 1-100 之间的数字！';
-        messageDiv.className = 'info';
-        return;
-    }
-    
-    if (attempts >= maxAttempts) {
-        messageDiv.innerHTML = `比赛已结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
-        messageDiv.className = 'lose';
-        return;
-    }
-    
-    attempts++;
-    
-    if (guess === secretNumber) {
-        messageDiv.innerHTML = '🎉 恭喜！猜对了！ 🎉';
-        messageDiv.className = 'win';
-        document.getElementById('guessInput').disabled = true;
-        updateDisplay();
-        return;
-    } else if (guess < secretNumber) {
-        messageDiv.innerHTML = `📈 ${guess} 太小了，再大一点！`;
-        messageDiv.className = 'info';
-    } else {
-        messageDiv.innerHTML = `📉 ${guess} 太大了，再小一点！`;
-        messageDiv.className = 'info';
-    }
-    
-    if (attempts >= maxAttempts) {
-        messageDiv.innerHTML = `😭 游戏结束！数字是 ${secretNumber}。点击"新游戏"继续挑战！`;
-        messageDiv.className = 'lose';
-        document.getElementById('guessInput').disabled = true;
-    }
-    
-    updateDisplay();
-    input.value = '';
-    input.focus();
-}
+    const grid = document.getElementById('grid');
+    const scoreSpan = document.getElementById('score');
+    const timerSpan = document.getElementById('timer');
 
-function resetGame() {
-    secretNumber = Math.floor(Math.random() * 100) + 1;
-    attempts = 0;
-    let input = document.getElementById('guessInput');
-    input.disabled = false;
-    input.value = '';
-    document.getElementById('gameMessage').innerHTML = '✨ 新游戏开始！猜一个 1-100 之间的数字';
-    document.getElementById('gameMessage').className = 'info';
-    updateDisplay();
-    input.focus();
-}
+    // 创建9个洞
+    function createGrid() {
+        grid.innerHTML = '';
+        holeElements = [];
+        for (let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.className = 'hole';
+            hole.dataset.index = i;
+            
+            const placeholder = document.createElement('div');
+            placeholder.className = 'empty-placeholder';
+            hole.appendChild(placeholder);
+            
+            hole.onclick = (e) => {
+                e.stopPropagation();
+                // 点空白可能扣分（可选，先不扣）
+            };
+            grid.appendChild(hole);
+            holeElements.push(hole);
+        }
+    }
 
-updateDisplay();
+    // 清除所有地鼠
+    function clearAllMoles() {
+        for (let i = 0; i < activeHoles.length; i++) {
+            const idx = activeHoles[i];
+            const hole = holeElements[idx];
+            if (hole) {
+                const existingImg = hole.querySelector('.mole-img');
+                if (existingImg) {
+                    existingImg.classList.add('hide-down');
+                    existingImg.classList.remove('show');
+                    setTimeout(() => {
+                        if (existingImg && existingImg.parentNode) {
+                            existingImg.remove();
+                            const newPlaceholder = document.createElement('div');
+                            newPlaceholder.className = 'empty-placeholder';
+                            if (hole.children.length === 0 || hole.children[0] !== newPlaceholder) {
+                                hole.appendChild(newPlaceholder);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        }
+        for (let t of moleTimeouts) clearTimeout(t);
+        moleTimeouts = [];
+        activeHoles = [];
+    }
+
+    // 移除指定洞的地鼠（缩回）
+    function removeMoleFromHole(index, immediate = false) {
+        const hole = holeElements[index];
+        if (!hole) return;
+        const img = hole.querySelector('.mole-img');
+        if (img) {
+            if (immediate) {
+                img.remove();
+                const placeholder = document.createElement('div');
+                placeholder.className = 'empty-placeholder';
+                if (hole.children.length === 0 || hole.children[0] !== placeholder) {
+                    hole.appendChild(placeholder);
+                }
+            } else {
+                img.classList.add('hide-down');
+                img.classList.remove('show');
+                setTimeout(() => {
+                    if (img && img.parentNode) {
+                        img.remove();
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'empty-placeholder';
+                        if (hole.children.length === 0 || hole.children[0] !== placeholder) {
+                            hole.appendChild(placeholder);
+                        }
+                    }
+                }, 100);
+            }
+        }
+        // 从活跃列表中移除
+        const pos = activeHoles.indexOf(index);
+        if (pos !== -1) activeHoles.splice(pos, 1);
+    }
+
+    // 在指定洞冒出地鼠
+    function showMoleInHole(index) {
+        if (!gameActive) return;
+        if (activeHoles.includes(index)) return;
+        
+        const hole = holeElements[index];
+        if (!hole) return;
+        
+        // 清除占位符
+        const placeholder = hole.querySelector('.empty-placeholder');
+        if (placeholder) placeholder.remove();
+        
+        // 创建地鼠图片
+        const img = document.createElement('img');
+        img.src = NORMAL_IMG;
+        img.className = 'mole-img';
+        img.onclick = (e) => {
+            e.stopPropagation();
+            hitMole(index, img);
+        };
+        hole.appendChild(img);
+        
+        // 强制重绘后触发动画
+        setTimeout(() => {
+            if (img && img.parentNode) {
+                img.classList.add('show');
+            }
+        }, 5);
+        
+        activeHoles.push(index);
+        
+        // 设置自动消失（2秒后没被打就缩回）
+        const timeout = setTimeout(() => {
+            if (gameActive && activeHoles.includes(index)) {
+                removeMoleFromHole(index);
+            }
+        }, 1800);
+        moleTimeouts.push(timeout);
+    }
+
+    // 打中地鼠
+    function hitMole(index, imgElement) {
+        if (!gameActive) return;
+        if (!activeHoles.includes(index)) return;
+        
+        // 加分
+        score++;
+        scoreSpan.innerText = score;
+        
+        // 切换成被打图片
+        imgElement.src = HIT_IMG;
+        
+        // 取消自动消失定时器
+        for (let i = 0; i < moleTimeouts.length; i++) {
+            // 清除关联此洞的定时器（简单清所有，后面再重排）
+        }
+        // 清除对应定时器
+        const newTimeouts = [];
+        for (let t of moleTimeouts) {
+            // 不清除，直接保留，但需要防止重复缩回
+        }
+        
+        // 延迟缩回并消失
+        setTimeout(() => {
+            if (imgElement && imgElement.parentNode) {
+                imgElement.classList.add('hide-down');
+                imgElement.classList.remove('show');
+                setTimeout(() => {
+                    if (imgElement && imgElement.parentNode) {
+                        imgElement.remove();
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'empty-placeholder';
+                        const hole = holeElements[index];
+                        if (hole && (hole.children.length === 0 || hole.children[0] !== placeholder)) {
+                            hole.appendChild(placeholder);
+                        }
+                    }
+                }, 100);
+            }
+            // 从活跃列表中移除
+            const pos = activeHoles.indexOf(index);
+            if (pos !== -1) activeHoles.splice(pos, 1);
+        }, 150);
+        
+        // 被打后0.3秒内在另一个洞重新冒出来（保持压力）
+        setTimeout(() => {
+            if (gameActive) {
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * 9);
+                } while (activeHoles.includes(newIndex) && activeHoles.length < 9);
+                if (!activeHoles.includes(newIndex)) {
+                    showMoleInHole(newIndex);
+                }
+            }
+        }, 350);
+    }
+
+    // 随机产生地鼠（每1秒左右出1只）
+    let moleGenerator = null;
+    function startMoleGenerator() {
+        if (moleGenerator) clearInterval(moleGenerator);
+        moleGenerator = setInterval(() => {
+            if (!gameActive) return;
+            // 控制最多同时出现3只
+            if (activeHoles.length >= 3) return;
+            let available = [];
+            for (let i = 0; i < 9; i++) {
+                if (!activeHoles.includes(i)) available.push(i);
+            }
+            if (available.length > 0) {
+                const randomIndex = available[Math.floor(Math.random() * available.length)];
+                showMoleInHole(randomIndex);
+            }
+        }, 900);
+    }
+
+    // 开始游戏
+    function startGame() {
+        if (gameActive) return;
+        resetGame();
+        gameActive = true;
+        
+        // 倒计时
+        gameInterval = setInterval(() => {
+            if (timeLeft <= 1) {
+                endGame();
+            } else {
+                timeLeft--;
+                timerSpan.innerText = timeLeft;
+            }
+        }, 1000);
+        
+        startMoleGenerator();
+        
+        // 开局立刻出几只活跃
+        setTimeout(() => {
+            for (let i = 0; i < 2; i++) {
+                if (!gameActive) break;
+                let available = [];
+                for (let j = 0; j < 9; j++) {
+                    if (!activeHoles.includes(j)) available.push(j);
+                }
+                if (available.length) {
+                    showMoleInHole(available[Math.floor(Math.random() * available.length)]);
+                }
+            }
+        }, 200);
+    }
+    
+    // 结束游戏
+    function endGame() {
+        gameActive = false;
+        if (gameInterval) clearInterval(gameInterval);
+        if (moleGenerator) clearInterval(moleGenerator);
+        moleGenerator = null;
+        clearAllMoles();
+        alert(`⏰ 游戏结束！\n\n✨ 最终得分：${score} 分 ✨\n\n点击“开始游戏”继续挑战！`);
+    }
+    
+    // 重置游戏
+    function resetGame() {
+        if (gameActive) {
+            gameActive = false;
+            if (gameInterval) clearInterval(gameInterval);
+            if (moleGenerator) clearInterval(moleGenerator);
+            moleGenerator = null;
+        }
+        clearAllMoles();
+        score = 0;
+        timeLeft = 30;
+        scoreSpan.innerText = score;
+        timerSpan.innerText = timeLeft;
+        activeHoles = [];
+        for (let t of moleTimeouts) clearTimeout(t);
+        moleTimeouts = [];
+        // 重建占位符
+        for (let i = 0; i < holeElements.length; i++) {
+            const hole = holeElements[i];
+            const existingImg = hole.querySelector('.mole-img');
+            if (existingImg) existingImg.remove();
+            if (!hole.querySelector('.empty-placeholder')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'empty-placeholder';
+                hole.appendChild(placeholder);
+            }
+        }
+    }
+
+    createGrid();
 </script>
 
 </body>
