@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>小游戏</title>
+    <title>打地鼠游戏 - 牛蹄筋专栏</title>
     <meta charset="utf-8">
     <style>
         * {
@@ -131,13 +131,13 @@
     <a href="/publish.html">近期发布</a>
     <a href="/contact.html">联系我们</a>
     <a href="/niutijin.html" style="color: #ffcc00;">🐮 牛蹄筋专栏</a>
-    <a href="/game.html" style="color: #ffcc00;">🎮 小游戏</a>
+    <a href="/game.html" style="color: #ffcc00;">🎮 打地鼠</a>
 </div>
 
 <div class="game-container">
     <h1>🎯 打地鼠游戏 🎯</h1>
     <div class="score-board">
-        <span>🐭 王茂钢特供版</span>
+        <span>🐭 牛蹄筋特供版</span>
         <span>得分: <span id="score">0</span></span>
         <span>⏱️ 剩余: <span id="timer">30</span>秒</span>
     </div>
@@ -296,11 +296,6 @@
     function hitMole(index, imgElement) {
         if (!gameActive) return;
         if (!activeHoles.includes(index)) return;
-        function hitMole(index, imgElement) {
-    if (!gameActive) return;
-    if (!activeHoles.includes(index)) return;
-    
-   
         
         // 加分
         score++;
