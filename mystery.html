@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>神秘图片 - 全球观察</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+        }
+        .nav {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 8px 16px;
+        }
+        .nav a:hover {
+            background-color: #555;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #ffcc00;
+            text-align: center;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .card p {
+            padding: 15px;
+            color: #ddd;
+            text-align: center;
+        }
+        hr {
+            margin: 40px 0;
+            border-color: #444;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ffcc00;
+            text-decoration: none;
+        }
+        footer {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="nav">
+    <a href="/">首页</a>
+    <a href="/about.html" style="color: white;">关于我们</a>
+    <a href="/contact.html" style="color: white;">联系我们</a>
+    <a href="/publish.html" style="color: white;">近期发布</a>
+    <a href="/niutijin.html" style="color: white;">🐮 牛蹄筋专栏</a>
+    <a href="/mystery.html" style="color: white;">❓ 神秘图片</a>
+</div>
+
+<h1>🔮 神秘图片 🔮</h1>
+<p class="subtitle">每一张图都是一个秘密...</p>
+
+<div class="gallery">
+    <!-- 在这里添加图片 -->
+    <div class="card">
+        <img src="你的图片链接1" alt="神秘图1" loading="lazy">
+        <p>图1的神秘描述</p>
+    </div>
+    <div class="card">
+        <img src="你的图片链接2" alt="神秘图2" loading="lazy">
+        <p>图2的神秘描述</p>
+    </div>
+    <div class="card">
+        <img src="你的图片链接3" alt="神秘图3" loading="lazy">
+        <p>图3的神秘描述</p>
+    </div>
+</div>
+
+<hr>
+
+<a href="/" class="back-link">← 返回首页</a>
+
+<footer>
+    <p>© 2026 Xwñf | 神秘图片专区</p>
+</footer>
+
+</body>
+</html>
