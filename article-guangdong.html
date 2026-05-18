@@ -1,5 +1,139 @@
 <!DOCTYPE html>
 <html>
+    <script>
+// 网站全局验证系统 - 多账号版
+(function() {
+    // 预设的账号和密码
+    const USERS = {
+        "32": { password: "323339", welcome: "欢迎！Fyh同学" },
+        "33": { password: "323339", welcome: "欢迎！Hxb同学" },
+        "39": { password: "323339", welcome: "欢迎！站长" }
+    };
+    
+    // 验证标记的 key（用 sessionStorage，关闭浏览器即清除）
+    const AUTH_KEY = "site_authenticated";
+    const AUTH_USER_KEY = "site_username";
+    
+    // 检查是否已经验证过
+    function isAuthenticated() {
+        return sessionStorage.getItem(AUTH_KEY) === "true";
+    }
+    
+    // 保存验证状态
+    function setAuthenticated(username) {
+        sessionStorage.setItem(AUTH_KEY, "true");
+        sessionStorage.setItem(AUTH_USER_KEY, username);
+    }
+    
+    // 获取已登录的用户名
+    function getLoggedInUser() {
+        return sessionStorage.getItem(AUTH_USER_KEY);
+    }
+    
+    // 显示欢迎信息（悬浮通知，3秒后消失）
+    function showWelcomeMessage(username) {
+        const user = USERS[username];
+        if (user && user.welcome) {
+            // 创建悬浮提示
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 50px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    animation: fadeInOut 3s ease forwards;
+                ">
+                    ${user.welcome} 🎉
+                </div>
+                <style>
+                    @keyframes fadeInOut {
+                        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                        15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                        85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+                    }
+                </style>
+            `;
+            document.body.appendChild(div);
+            
+            // 3秒后移除元素
+            setTimeout(() => {
+                if (div && div.parentNode) div.remove();
+            }, 3000);
+        }
+    }
+    
+    // 显示登录弹窗
+    function showLoginDialog() {
+        var username = prompt("🔐 请输入账号：\n（可用账号：32、33、39）");
+        if (username === null) {
+            // 用户点击取消，拒绝访问
+            document.body.innerHTML = `<div style='text-align:center;padding:100px;font-family:Arial;'><h1>⛔ 访问被拒绝</h1><p>需要验证才能访问此网站。</p><button onclick='location.reload()' style='padding:10px 20px;background:#333;color:white;border:none;border-radius:5px;cursor:pointer;'>重新尝试</button></div>`;
+            return false;
+        }
+        
+        // 检查账号是否存在
+        if (!USERS[username]) {
+            alert("❌ 账号或密码错误！");
+            return showLoginDialog();
+        }
+        
+        var password = prompt("🔐 请输入密码：");
+        if (password === null) {
+            document.body.innerHTML = `<div style='text-align:center;padding:100px;font-family:Arial;'><h1>⛔ 访问被拒绝</h1><p>需要验证才能访问此网站。</p><button onclick='location.reload()' style='padding:10px 20px;background:#333;color:white;border:none;border-radius:5px;cursor:pointer;'>重新尝试</button></div>`;
+            return false;
+        }
+        
+        if (USERS[username].password === password) {
+            setAuthenticated(username);
+            location.reload();
+            return true;
+        } else {
+            alert("❌ 账号或密码错误！");
+            return showLoginDialog();
+        }
+    }
+    
+    // 显示登录后的欢迎语（页面加载完成后显示）
+    function showWelcomeOnLoad() {
+        if (isAuthenticated()) {
+            const username = getLoggedInUser();
+            if (username) {
+                showWelcomeMessage(username);
+            }
+        }
+    }
+    
+    // 退出登录功能（可选，在导航栏添加"退出"链接时使用）
+    window.logout = function() {
+        sessionStorage.removeItem(AUTH_KEY);
+        sessionStorage.removeItem(AUTH_USER_KEY);
+        location.reload();
+    };
+    
+    // 检查是否需要验证
+    if (!isAuthenticated()) {
+        // 延迟一下确保页面加载后再弹窗
+        setTimeout(function() {
+            showLoginDialog();
+        }, 100);
+    } else {
+        // 已登录，显示欢迎语
+        setTimeout(function() {
+            showWelcomeOnLoad();
+        }, 500);
+    }
+})();
+</script>
 <head>
     <title>广东专项整治传闻 - Xwñf全球观察</title>
     <meta charset="utf-8">
