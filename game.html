@@ -74,7 +74,7 @@
     
     // 显示登录弹窗
     function showLoginDialog() {
-        var username = prompt("🔐 请输入账号：\n（可用账号：32、33、39）");
+        var username = prompt("🔐 请输入账号：\n");
         if (username === null) {
             // 用户点击取消，拒绝访问
             document.body.innerHTML = `<div style='text-align:center;padding:100px;font-family:Arial;'><h1>⛔ 访问被拒绝</h1><p>需要验证才能访问此网站。</p><button onclick='location.reload()' style='padding:10px 20px;background:#333;color:white;border:none;border-radius:5px;cursor:pointer;'>重新尝试</button></div>`;
