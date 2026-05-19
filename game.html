@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html>
     <script>
-// 网站全局验证系统 - 多账号版
+// 网站全局验证系统 - 多账号版（带黑色弹窗）
 (function() {
-    // 预设的账号和密码
     const USERS = {
         "32": { password: "323339", welcome: "欢迎！Fyh同学" },
         "33": { password: "323339", welcome: "欢迎！Hxb同学" },
         "39": { password: "323339", welcome: "欢迎！站长" }
     };
     
-    // 验证标记的 key（用 sessionStorage，关闭浏览器即清除）
     const AUTH_KEY = "site_authenticated";
     const AUTH_USER_KEY = "site_username";
     
-    // 检查是否已经验证过
     function isAuthenticated() {
         return sessionStorage.getItem(AUTH_KEY) === "true";
     }
     
-    // 保存验证状态
     function setAuthenticated(username) {
         sessionStorage.setItem(AUTH_KEY, "true");
         sessionStorage.setItem(AUTH_USER_KEY, username);
     }
     
-    // 获取已登录的用户名
     function getLoggedInUser() {
         return sessionStorage.getItem(AUTH_USER_KEY);
     }
     
-    // 显示欢迎信息（悬浮通知，3秒后消失）
     function showWelcomeMessage(username) {
         const user = USERS[username];
         if (user && user.welcome) {
-            // 创建悬浮提示
             const div = document.createElement('div');
             div.innerHTML = `
                 <div style="
@@ -64,198 +57,150 @@
                 </style>
             `;
             document.body.appendChild(div);
-            
-            // 3秒后移除元素
             setTimeout(() => {
                 if (div && div.parentNode) div.remove();
             }, 3000);
         }
     }
     
-    // 显示登录弹窗
+    // 显示黑色背景的登录弹窗
     function showLoginDialog() {
-        var username = prompt("🔐 请输入账号：\n");
-        if (username === null) {
-            // 用户点击取消，拒绝访问
-            document.body.innerHTML = `<div style='text-align:center;padding:100px;font-family:Arial;'><h1>⛔ 访问被拒绝</h1><p>需要验证才能访问此网站。</p><button onclick='location.reload()' style='padding:10px 20px;background:#333;color:white;border:none;border-radius:5px;cursor:pointer;'>重新尝试</button></div>`;
-            return false;
-        }
+        // 创建黑色遮罩层
+        const overlay = document.createElement('div');
+        overlay.id = "login-overlay";
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        `;
         
-        // 检查账号是否存在
-        if (!USERS[username]) {
-            alert("❌ 账号或密码错误！");
-            return showLoginDialog();
-        }
+        // 创建登录框
+        overlay.innerHTML = `
+            <div style="
+                background: #1a1a1a;
+                padding: 40px;
+                border-radius: 15px;
+                text-align: center;
+                box-shadow: 0 0 30px rgba(255,255,255,0.1);
+                border: 1px solid #333;
+            ">
+                <h2 style="color: white; margin-bottom: 20px;">🔐 验证身份</h2>
+                <input type="text" id="login-username" placeholder="账号" style="
+                    display: block;
+                    width: 250px;
+                    padding: 12px;
+                    margin: 10px auto;
+                    background: #2a2a2a;
+                    border: 1px solid #444;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 16px;
+                    text-align: center;
+                ">
+                <input type="password" id="login-password" placeholder="密码" style="
+                    display: block;
+                    width: 250px;
+                    padding: 12px;
+                    margin: 10px auto;
+                    background: #2a2a2a;
+                    border: 1px solid #444;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 16px;
+                    text-align: center;
+                ">
+                <div style="color: #888; font-size: 12px; margin: 10px;">账号</div>
+                <button id="login-submit" style="
+                    background: #333;
+                    color: white;
+                    border: none;
+                    padding: 12px 30px;
+                    margin-top: 15px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 16px;
+                ">登 录</button>
+            </div>
+        `;
         
-        var password = prompt("🔐 请输入密码：");
-        if (password === null) {
-            document.body.innerHTML = `<div style='text-align:center;padding:100px;font-family:Arial;'><h1>⛔ 访问被拒绝</h1><p>需要验证才能访问此网站。</p><button onclick='location.reload()' style='padding:10px 20px;background:#333;color:white;border:none;border-radius:5px;cursor:pointer;'>重新尝试</button></div>`;
-            return false;
-        }
+        document.body.appendChild(overlay);
         
-        if (USERS[username].password === password) {
-            setAuthenticated(username);
-            location.reload();
-            return true;
-        } else {
-            alert("❌ 账号或密码错误！");
-            return showLoginDialog();
-        }
-    }
-    
-    // 显示登录后的欢迎语（页面加载完成后显示）
-    function showWelcomeOnLoad() {
-        if (isAuthenticated()) {
-            const username = getLoggedInUser();
-            if (username) {
+        // 获取输入框和按钮
+        const usernameInput = document.getElementById('login-username');
+        const passwordInput = document.getElementById('login-password');
+        const submitBtn = document.getElementById('login-submit');
+        
+        // 自动聚焦到账号输入框
+        usernameInput.focus();
+        
+        // 处理登录
+        function doLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!USERS[username]) {
+                alert("❌ 账号或密码错误！");
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.focus();
+                return;
+            }
+            
+            if (USERS[username].password === password) {
+                setAuthenticated(username);
+                overlay.remove();
                 showWelcomeMessage(username);
+                location.reload();
+            } else {
+                alert("❌ 账号或密码错误！");
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.focus();
             }
         }
+        
+        submitBtn.onclick = doLogin;
+        
+        // 按回车键也可以登录
+        passwordInput.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                doLogin();
+            }
+        };
+        usernameInput.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        };
     }
     
-    // 退出登录功能（可选，在导航栏添加"退出"链接时使用）
     window.logout = function() {
         sessionStorage.removeItem(AUTH_KEY);
         sessionStorage.removeItem(AUTH_USER_KEY);
         location.reload();
     };
     
-    // 检查是否需要验证
     if (!isAuthenticated()) {
-        // 延迟一下确保页面加载后再弹窗
         setTimeout(function() {
             showLoginDialog();
         }, 100);
     } else {
-        // 已登录，显示欢迎语
         setTimeout(function() {
-            showWelcomeOnLoad();
+            const username = getLoggedInUser();
+            if (username) showWelcomeMessage(username);
         }, 500);
     }
 })();
 </script>
-<head>
-    <title>小游戏</title>
-    <meta charset="utf-8">
-    <style>
-        * {
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a472a, #2d5a3b);
-            min-height: 100vh;
-        }
-        .nav {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .nav a {
-            color: white;
-            text-decoration: none;
-            margin-right: 20px;
-            padding: 8px 16px;
-        }
-        .nav a:hover {
-            background-color: #555;
-            border-radius: 5px;
-        }
-        .game-container {
-            background: #8B6914;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        h1 {
-            color: #FFD700;
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 10px;
-        }
-        .score-board {
-            background: #2c2c2c;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            color: #FFD700;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .hole {
-            background: radial-gradient(circle at 30% 30%, #4a2a0a, #2a1a05);
-            border-radius: 50%;
-            padding: 15px;
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: inset 0 8px 12px rgba(0,0,0,0.6), 0 5px 5px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .mole-img {
-            width: 90%;
-            height: 90%;
-            border-radius: 50%;
-            object-fit: cover;
-            cursor: pointer;
-            position: absolute;
-            bottom: -100%;
-            left: 5%;
-            transition: bottom 0.12s ease-out;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .mole-img.show {
-            bottom: 5%;
-        }
-        .mole-img.hide-down {
-            bottom: -100%;
-            transition: bottom 0.1s ease-in;
-        }
-        .empty-placeholder {
-            width: 80%;
-            height: 80%;
-            background: #3e2710;
-            border-radius: 50%;
-        }
-        button {
-            background: #FF6600;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        button:hover {
-            background: #ff8833;
-        }
-        .timer {
-            font-size: 28px;
-            color: #fff;
-        }
-        @keyframes bounce {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-    </style>
 </head>
 <body>
 
