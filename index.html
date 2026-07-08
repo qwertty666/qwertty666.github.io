@@ -4,11 +4,19 @@
 // 网站全局验证系统 - 多账号版（带黑色弹窗）
 (function() {
     const USERS = {
-        "32": { password: "323339", welcome: "欢迎！Fyh同学" },
-        "33": { password: "323339", welcome: "欢迎！Hxb同学" },
-        "39": { password: "707522", welcome: "欢迎！站长" }
+        "32": { password: "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f", welcome: "欢迎！Fyh同学" },
+        "33": { password: "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f", welcome: "欢迎！Hxb同学" },
+        "39": { password: "858055bdObe68b68e0bd74cac415184ee4e39631fb14c00e7094a348702ad23b", welcome: "欢迎！站长" }
     };
-    
+
+    // SHA-256 哈希函数（必须保留）
+async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
     const AUTH_KEY = "site_authenticated";
     const AUTH_USER_KEY = "site_username";
     
@@ -142,64 +150,69 @@
         // 自动聚焦到账号输入框
         usernameInput.focus();
         
-        // 处理登录
-        function doLogin() {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-            
-            if (!USERS[username]) {
-                alert("❌ 账号或密码错误！");
-                usernameInput.value = '';
-                passwordInput.value = '';
-                usernameInput.focus();
-                return;
-            }
-            
-            if (USERS[username].password === password) {
-                setAuthenticated(username);
-                overlay.remove();
-                showWelcomeMessage(username);
-                location.reload();
-            } else {
-                alert("❌ 账号或密码错误！");
-                usernameInput.value = '';
-                passwordInput.value = '';
-                usernameInput.focus();
-            }
-        }
+        // 处理登录（哈希版）
+async function doLogin() {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!USERS[username]) {
+        alert("❌ 账号或密码错误！");
+        usernameInput.value = '';
+        passwordInput.value = '';
+        usernameInput.focus();
+        return;
+    }
+
+    // 计算用户输入密码的哈希值
+    const hashedInput = await sha256(password);
+
+    // 用哈希值对比（而不是明文对比）
+    if (USERS[username].password === hashedInput) {
+        setAuthenticated(username);
+        overlay.remove();
+        showWelcomeMessage(username);
+        location.reload();
+    } else {
+        alert("❌ 账号或密码错误！");
+        usernameInput.value = '';
+        passwordInput.value = '';
+        usernameInput.focus();
+    }
+}
         
         submitBtn.onclick = doLogin;
         
-        // 按回车键也可以登录
-        passwordInput.onkeypress = function(e) {
-            if (e.key === 'Enter') {
-                doLogin();
-            }
-        };
-        usernameInput.onkeypress = function(e) {
-            if (e.key === 'Enter') {
-                passwordInput.focus();
-            }
-        };
+       // 按回车键登录
+passwordInput.onkeypress = function(e) {
+    if (e.key === 'Enter') {
+        doLogin();
     }
-    
-    window.logout = function() {
-        sessionStorage.removeItem(AUTH_KEY);
-        sessionStorage.removeItem(AUTH_USER_KEY);
-        location.reload();
-    };
-    
-    if (!isAuthenticated()) {
-        setTimeout(function() {
-            showLoginDialog();
-        }, 100);
-    } else {
-        setTimeout(function() {
-            const username = getLoggedInUser();
-            if (username) showWelcomeMessage(username);
-        }, 500);
+};
+
+usernameInput.onkeypress = function(e) {
+    if (e.key === 'Enter') {
+        passwordInput.focus();
     }
-})();
+};
+
+// 退出登录
+window.logout = function() {
+    sessionStorage.removeItem(AUTH_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    location.reload();
+};
+
+// 页面加载时检查登录状态
+if (!isAuthenticated()) {
+    setTimeout(function() {
+        showLoginDialog();
+    }, 100);
+} else {
+    setTimeout(function() {
+        const username = getLoggedInUser();
+        if (username) showWelcomeMessage(username);
+    }, 500);
+}
 </script>
 <head>
     <title>全球观察</title>
