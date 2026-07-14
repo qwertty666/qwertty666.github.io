@@ -6,403 +6,191 @@
     <script>
 
 (function () {
-
-    // ======================
-
-    // SHA-256 加密函数
-
-    // ======================
-
     async function sha256(message) {
-
         const msgBuffer = new TextEncoder().encode(message);
-
         const hashBuffer = await crypto.subtle.digest(
-
             "SHA-256",
-
             msgBuffer
-
         );
-
         const hashArray = Array.from(
-
             new Uint8Array(hashBuffer)
-
         );
-
         return hashArray
-
             .map(b => b.toString(16).padStart(2, "0"))
-
             .join("");
-
     }
-
-    // ======================
-
-    // 用户数据
-
-    // 密码为 SHA-256
-
-    // ======================
-
     const USERS = {
-
         "32": {
-
             password:
-
             "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f",
-
             welcome:
-
             "欢迎！Fyh同学"
-
         },
-
         "33": {
-
             password:
-
             "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f",
-
             welcome:
-
             "欢迎！Hxb同学"
-
         },
-
         "39": {
-
             password:
-
             "858055bd0be68b68e0bd74cac415184ee4e39631fb14c00e7094a348702ad23b",
-
             welcome:
-
             "欢迎！站长"
-
         }
-
     };
-
     const AUTH_KEY = "site_authenticated";
-
     const AUTH_USER_KEY = "site_username";
-
     function isAuthenticated(){
-
         return sessionStorage.getItem(AUTH_KEY)
-
         === "true";
-
     }
-
     function setAuthenticated(username){
-
         sessionStorage.setItem(
-
             AUTH_KEY,
-
             "true"
-
         );
-
         sessionStorage.setItem(
-
             AUTH_USER_KEY,
-
             username
-
         );
-
     }
-
     function getLoggedInUser(){
-
         return sessionStorage.getItem(
-
             AUTH_USER_KEY
-
         );
-
     }
-
-    // ======================
-
-    // 欢迎提示
-
-    // ======================
-
     function showWelcomeMessage(username){
-
         const user = USERS[username];
-
         if(!user) return;
-
         const div=document.createElement("div");
-
         div.innerHTML=`
-
         <div style="
-
         position:fixed;
-
-        top:20px;
-
+        top:20px；
         left:50%;
-
         transform:translateX(-50%);
-
         background:linear-gradient(135deg,#667eea,#764ba2);
-
         color:white;
-
         padding:15px 30px;
-
         border-radius:50px;
-
         font-size:18px;
-
         font-weight:bold;
-
         z-index:10000;
-
         box-shadow:0 4px 15px rgba(0,0,0,.3);
-
         animation:fadeInOut 3s ease forwards;
-
         ">
-
         ${user.welcome} 🎉
-
         </div>
-
         <style>
-
         @keyframes fadeInOut {
-
         0%{
-
         opacity:0;
-
         transform:
-
         translateX(-50%)
-
         translateY(-20px);
-
         }
-
         15%{
-
         opacity:1;
-
         transform:
-
         translateX(-50%)
-
         translateY(0);
-
         }
-
         85%{
-
         opacity:1;
-
         }
-
         100%{
-
         opacity:0;
-
         }
-
         }
-
         </style>
-
         `;
-
         document.body.appendChild(div);
-
         setTimeout(()=>{
-
             if(div.parentNode)
-
             div.remove();
-
         },3000);
-
     }
-
-    // ======================
-
-    // 登录窗口
-
-    // ======================
-
     function showLoginDialog(){
-
         const overlay=document.createElement("div");
-
         overlay.id="login-overlay";
-
         overlay.style.cssText=`
-
         position:fixed;
-
         top:0;
-
         left:0;
-
         width:100%;
-
         height:100%;
-
         background:black;
-
         z-index:99999;
-
         display:flex;
-
         justify-content:center;
-
         align-items:center;
-
         font-family:Arial;
-
         `;
-
         overlay.innerHTML=`
-
         <div style="
-
         background:#1a1a1a;
-
         padding:40px;
-
         border-radius:15px;
-
         text-align:center;
-
         box-shadow:0 0 30px rgba(255,255,255,.1);
-
         ">
-
         <h2 style="color:white">
-
         🔐 验证身份
-
         </h2>
-
         <input id="login-username"
-
         placeholder="账号"
-
         style="
-
         width:250px;
-
         padding:12px;
-
         margin:10px;
-
         background:#2a2a2a;
-
         color:white;
-
         border:1px solid #444;
-
         border-radius:8px;
-
         text-align:center;
-
         ">
-
         <input id="login-password"
-
         type="password"
-
         placeholder="密码"
-
         style="
-
         width:250px;
-
         padding:12px;
-
         margin:10px;
-
         background:#2a2a2a;
-
         color:white;
-
         border:1px solid #444;
-
         border-radius:8px;
-
         text-align:center;
-
         ">
-
         <br>
-
         <button id="login-submit"
-
         style="
-
         background:#333;
-
         color:white;
-
         border:none;
-
         padding:12px 30px;
-
         border-radius:8px;
-
         cursor:pointer;
-
         ">
-
         登 录
-
         </button>
-
         </div>
-
         `;
-
         document.body.appendChild(overlay);
-
         const usernameInput =
-
         document.getElementById(
-
         "login-username"
-
         );
-
         const passwordInput =
-
         document.getElementById(
-
         "login-password"
-
         );
-
         const submitBtn =
-
         document.getElementById(
-
         "login-submit"
-
         );
-
         usernameInput.focus();
-
         async function doLogin(){
 
             const username =
