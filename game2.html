@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+// 检查登录状态，未登录则跳转回首页
+(function() {
+    const AUTH_KEY = 'site_authenticated';
+    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+        window.location.href = '/';
+    }
+})();
+</script>
     <title>打地鼠 · CDFC</title>
     <style>
         * {
