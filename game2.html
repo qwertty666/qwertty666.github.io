@@ -135,9 +135,9 @@
 </div>
 
 <div class="game-container">
-    <h1>🎯 打地鼠游戏 🎯</h1>
+    <h1>打地鼠</h1>
     <div class="score-board">
-        <span>🐭 牛蹄筋特供版</span>
+        <span>🐭 王茂钢特供版</span>
         <span>得分: <span id="score">0</span></span>
         <span>⏱️ 剩余: <span id="timer">30</span>秒</span>
     </div>
@@ -145,16 +145,16 @@
     <div class="grid" id="grid"></div>
     
     <div>
-        <button onclick="startGame()">🚀 开始游戏</button>
-        <button onclick="resetGame()">🔄 重置</button>
+        <button onclick="startGame()">开始游戏</button>
+        <button onclick="resetGame()">🔄</button>
     </div>
-    <p style="color: #ddd; margin-top: 15px;">💡 点击冒出来的头像打地鼠！打中会变脸 💡</p>
+    <p style="color: #ddd; margin-top: 15px;">点击冒出来的头像打地鼠！打中会变脸</p>
 </div>
 
 <script>
     // ===== 替换成你上传的图片链接 =====
-    const NORMAL_IMG = "";
-    const HIT_IMG = "";
+    const NORMAL_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/CC4B146425F7DD0E59BE6EA1FEEB2470_guxqx7";
+    const HIT_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/1CC8CAAE38A7790104FED8DCB5A9D487_y1nzhn";
     // =================================
 
     let score = 0;
@@ -409,7 +409,7 @@
         if (moleGenerator) clearInterval(moleGenerator);
         moleGenerator = null;
         clearAllMoles();
-        alert(`⏰ 游戏结束！\n\n✨ 最终得分：${score} 分 ✨\n\n点击“开始游戏”继续挑战！`);
+        alert(`游戏结束！\n\n✨ 最终得分：${score} 分 ✨\n\n点击“开始游戏”继续挑战！`);
     }
     
     // 重置游戏
