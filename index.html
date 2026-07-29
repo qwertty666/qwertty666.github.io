@@ -35,9 +35,9 @@
     function showWelcomeMessage(username) {
         // 用户名到称呼的映射
         const nameMap = {
-            '32': 'Fyh同学',
-            '33': 'Hxb同学',
-            '39': '站长'
+            '32': 'Fyh',
+            '33': 'Hxb',
+            '39': 'sir'
         };
         const displayName = nameMap[username] || username;
         
@@ -60,7 +60,7 @@
                 box-shadow: 0 4px 15px rgba(0,0,0,0.3);
                 animation: slideDown 0.5s ease;
             ">
-                👋 欢迎回来，${displayName}！
+                welcome，${displayName}！
             </div>
             <style>
                 @keyframes slideDown {
@@ -109,7 +109,7 @@
                 border: 1px solid #333;
                 text-align: center;
             ">
-                <h2 style="color: white; margin: 0 0 8px 0;">🔐 验证身份</h2>
+                <h2 style="color: white; margin: 0 0 8px 0;">登录验证</h2>
                 <p style="color: #888; margin: 0 0 24px 0; font-size: 14px;">请输入你的账号和密码</p>
                 
                 <input type="text" id="login-username" placeholder="账号" style="
@@ -212,7 +212,7 @@
                 }
             } catch (error) {
                 // 网络错误
-                errorEl.textContent = '❌ 网络异常，请稍后重试';
+                errorEl.textContent = '网络异常，请稍后重试';
                 errorEl.style.display = 'block';
                 console.error('登录请求失败:', error);
             } finally {
