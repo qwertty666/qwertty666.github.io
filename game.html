@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="auth.js"></script>
+    <script>
+// 检查登录状态，未登录则跳转回首页
+(function() {
+    const AUTH_KEY = 'site_authenticated';
+    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+        window.location.href = '/';
+    }
+})();
+</script>
     <title>王茂钢打飞机大作战</title>
     <style>
         * {
