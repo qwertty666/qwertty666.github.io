@@ -1,859 +1,904 @@
 <!DOCTYPE html>
-<html>
-   <script>
-
-(function () {
-
-    // ======================
-
-    // SHA-256 加密函数
-
-    // ======================
-
-    async function sha256(message) {
-
-        const msgBuffer = new TextEncoder().encode(message);
-
-        const hashBuffer = await crypto.subtle.digest(
-
-            "SHA-256",
-
-            msgBuffer
-
-        );
-
-        const hashArray = Array.from(
-
-            new Uint8Array(hashBuffer)
-
-        );
-
-        return hashArray
-
-            .map(b => b.toString(16).padStart(2, "0"))
-
-            .join("");
-
-    }
-
-    // ======================
-
-    // 用户数据
-
-    // 密码为 SHA-256
-
-    // ======================
-
-    const USERS = {
-
-        "32": {
-
-            password:
-
-            "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f",
-
-            welcome:
-
-            "欢迎！Fyh同学"
-
-        },
-
-        "33": {
-
-            password:
-
-            "3d8a755f723c4ad9223f8dc17f81dbbe210b96c56bf69877540d3d7b772be13f",
-
-            welcome:
-
-            "欢迎！Hxb同学"
-
-        },
-
-        "39": {
-
-            password:
-
-            "858055bd0be68b68e0bd74cac415184ee4e39631fb14c00e7094a348702ad23b",
-
-            welcome:
-
-            "欢迎！站长"
-
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <script src="auth.js"></script>
+    <title>王茂钢打飞机大作战</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important; /* 彻底禁用全局长按弹出菜单 */
+            touch-action: none; /* 禁用系统默认缩放和双击 */
+        }
+        body {
+            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh; 
+            overflow: hidden;
         }
 
-    };
-
-    const AUTH_KEY = "site_authenticated";
-
-    const AUTH_USER_KEY = "site_username";
-
-    function isAuthenticated(){
-
-        return sessionStorage.getItem(AUTH_KEY)
-
-        === "true";
-
-    }
-
-    function setAuthenticated(username){
-
-        sessionStorage.setItem(
-
-            AUTH_KEY,
-
-            "true"
-
-        );
-
-        sessionStorage.setItem(
-
-            AUTH_USER_KEY,
-
-            username
-
-        );
-
-    }
-
-    function getLoggedInUser(){
-
-        return sessionStorage.getItem(
-
-            AUTH_USER_KEY
-
-        );
-
-    }
-
-    // ======================
-
-    // 欢迎提示
-
-    // ======================
-
-    function showWelcomeMessage(username){
-
-        const user = USERS[username];
-
-        if(!user) return;
-
-        const div=document.createElement("div");
-
-        div.innerHTML=`
-
-        <div style="
-
-        position:fixed;
-
-        top:20px;
-
-        left:50%;
-
-        transform:translateX(-50%);
-
-        background:linear-gradient(135deg,#667eea,#764ba2);
-
-        color:white;
-
-        padding:15px 30px;
-
-        border-radius:50px;
-
-        font-size:18px;
-
-        font-weight:bold;
-
-        z-index:10000;
-
-        box-shadow:0 4px 15px rgba(0,0,0,.3);
-
-        animation:fadeInOut 3s ease forwards;
-
-        ">
-
-        ${user.welcome} 🎉
-
-        </div>
-
-        <style>
-
-        @keyframes fadeInOut {
-
-        0%{
-
-        opacity:0;
-
-        transform:
-
-        translateX(-50%)
-
-        translateY(-20px);
-
+        /* 游戏主容器 */
+        #wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            height: 100dvh; 
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        15%{
-
-        opacity:1;
-
-        transform:
-
-        translateX(-50%)
-
-        translateY(0);
-
+        /* 🖥️ 电脑端网页动态样式扩展 */
+        #wrapper.pc-mode {
+            max-width: 540px; 
+            max-height: 720px; 
+            height: 720px;
+            border: 4px solid #3d346d;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(91, 77, 163, 0.2);
         }
 
-        85%{
-
-        opacity:1;
-
+        /* 顶栏：🛠️ 修正拼写，恢复靠右对齐 */
+        #status-bar {
+            display: flex;
+            justify-content: space-between; /* 修复拼写错误，实现左标题右数据 */
+            align-items: center;
+            padding: 12px 15px;
+            background: #1e1e1e;
+            border-bottom: 2px solid #2d2d2d;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        #wrapper.pc-mode #status-bar {
+            padding: 15px 25px;
+            background: #18142c;
+            border-bottom: 3px solid #282147;
         }
 
-        100%{
-
-        opacity:0;
-
+        .sb-left {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
+        .sb-link {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+        .sb-link:hover {
+            color: #2ed573;
         }
 
-        </style>
-
-        `;
-
-        document.body.appendChild(div);
-
-        setTimeout(()=>{
-
-            if(div.parentNode)
-
-            div.remove();
-
-        },3000);
-
-    }
-
-    // ======================
-
-    // 登录窗口
-
-    // ======================
-
-    function showLoginDialog(){
-
-        const overlay=document.createElement("div");
-
-        overlay.id="login-overlay";
-
-        overlay.style.cssText=`
-
-        position:fixed;
-
-        top:0;
-
-        left:0;
-
-        width:100%;
-
-        height:100%;
-
-        background:black;
-
-        z-index:99999;
-
-        display:flex;
-
-        justify-content:center;
-
-        align-items:center;
-
-        font-family:Arial;
-
-        `;
-
-        overlay.innerHTML=`
-
-        <div style="
-
-        background:#1a1a1a;
-
-        padding:40px;
-
-        border-radius:15px;
-
-        text-align:center;
-
-        box-shadow:0 0 30px rgba(255,255,255,.1);
-
-        ">
-
-        <h2 style="color:white">
-
-        🔐 验证身份
-
-        </h2>
-
-        <input id="login-username"
-
-        placeholder="账号"
-
-        style="
-
-        width:250px;
-
-        padding:12px;
-
-        margin:10px;
-
-        background:#2a2a2a;
-
-        color:white;
-
-        border:1px solid #444;
-
-        border-radius:8px;
-
-        text-align:center;
-
-        ">
-
-        <input id="login-password"
-
-        type="password"
-
-        placeholder="密码"
-
-        style="
-
-        width:250px;
-
-        padding:12px;
-
-        margin:10px;
-
-        background:#2a2a2a;
-
-        color:white;
-
-        border:1px solid #444;
-
-        border-radius:8px;
-
-        text-align:center;
-
-        ">
-
-        <br>
-
-        <button id="login-submit"
-
-        style="
-
-        background:#333;
-
-        color:white;
-
-        border:none;
-
-        padding:12px 30px;
-
-        border-radius:8px;
-
-        cursor:pointer;
-
-        ">
-
-        登 录
-
-        </button>
-
-        </div>
-
-        `;
-
-        document.body.appendChild(overlay);
-
-        const usernameInput =
-
-        document.getElementById(
-
-        "login-username"
-
-        );
-
-        const passwordInput =
-
-        document.getElementById(
-
-        "login-password"
-
-        );
-
-        const submitBtn =
-
-        document.getElementById(
-
-        "login-submit"
-
-        );
-
-        usernameInput.focus();
-
-        async function doLogin(){
-
-            const username =
-
-            usernameInput.value.trim();
-
-            const password =
-
-            passwordInput.value;
-
-            if(!USERS[username]){
-
-                alert("❌账号或密码错误");
-
-                return;
-
-            }
-
-            const passwordHash =
-
-            await sha256(password);
-
-            if(
-
-            USERS[username].password
-
-            === passwordHash
-
-            ){
-
-                setAuthenticated(username);
-
-                overlay.remove();
-
-                showWelcomeMessage(username);
-
-            }else{
-
-                alert("❌账号或密码错误");
-
-                passwordInput.value="";
-
-            }
-
+        .sb-right {
+            display: flex;
+            gap: 12px;
+            color: #ccc;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .data-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .data-highlight {
+            color: #fff200;
         }
 
-        submitBtn.onclick=doLogin;
+        /* 画布区域 */
+        #canvas-container {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            background: #050505;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
 
-        passwordInput.onkeypress=function(e){
+        /* 特殊炮弹击中顶部弹窗提示 */
+        #special-popup {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 10, 30, 0.95);
+            border: 2px solid #fff200;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 12;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 242, 0, 0.6);
+            white-space: nowrap;
+            pointer-events: none;
+            animation: popupFadeIn 0.2s ease-out;
+        }
+        .popup-highlight {
+            color: #fff200;
+            font-size: 16px;
+            margin-left: 4px;
+            text-shadow: 0 0 8px rgba(255, 242, 0, 0.6);
+        }
+        @keyframes popupFadeIn {
+            from { transform: translateX(-50%) scale(0.85); opacity: 0; }
+            to { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
 
-            if(e.key==="Enter"){
+        /* 遮罩层 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            align-items: center;
+            color: white;
+            z-index: 10;
+            text-align: center; 
+            padding: 40px 20px 20px 20px; 
+        }
+        
+        .overlay-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
-                doLogin();
+        .overlay h2 { 
+            margin-bottom: 15px; 
+            font-size: 28px; 
+            color: #ff4757; 
+            line-height: 1.4; 
+        }
+        
+        .overlay h2.success-title {
+            color: #2ed573;
+            text-shadow: 0 0 15px rgba(46, 213, 115, 0.6), 0 0 30px rgba(46, 213, 115, 0.2);
+            font-weight: 900;
+        }
 
-            }
+        .overlay h2.bomb-title {
+            color: #ff3838;
+            text-shadow: 0 0 20px rgba(255, 56, 56, 0.9), 0 0 40px rgba(255, 56, 56, 0.5);
+            font-weight: 900;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
 
-        };
+        .overlay p { margin-bottom: 20px; font-size: 14px; color: #ccc; line-height: 1.6; }
 
-        usernameInput.onkeypress=function(e){
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .mode-btn {
+            padding: 8px 18px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .mode-btn.active {
+            background: #ff4757;
+            color: #fff;
+            border-color: #ff4757;
+            box-shadow: 0 0 12px rgba(255, 71, 87, 0.5);
+        }
 
-            if(e.key==="Enter"){
+        .main-btn {
+            padding: 12px 45px;
+            font-size: 18px;
+            background: linear-gradient(180deg, #2ed573 0%, #26af5f 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46, 213, 115, 0.4);
+        }
 
-                passwordInput.focus();
+        /* 📱 手机端独立操作盘（保持紧凑压缩状态） */
+        #mobile-controller {
+            width: 100%;
+            padding: 8px 20px; 
+            background: #141124; 
+            border-top: 3px solid #231c3d;
+            display: none; /* 初始隐藏，由JS动态控制 */
+            justify-content: space-between;
+            align-items: center;
+            z-index: 8;
+            flex-shrink: 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.6);
+        }
+        #wrapper.pc-mode #mobile-controller {
+            display: none !important;
+        }
 
-            }
+        .dpad-horizontal {
+            display: flex;
+            gap: 10px; 
+        }
+        .ctrl-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            font-size: 22px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            width: 62px;  
+            height: 62px; 
+            touch-action: none;
+            -webkit-touch-callout: none !important;
+        }
+        .ctrl-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
 
-        };
+        #btn-fire {
+            width: 74px;  
+            height: 74px; 
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff5252 0%, #ff3333 100%);
+            color: white;
+            font-size: 28px; 
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.45);
+        }
+        #btn-fire:active {
+            background: linear-gradient(180deg, #ff3333 0%, #cc0000 100%);
+            transform: scale(0.93);
+            box-shadow: 0 2px 8px rgba(255, 51, 51, 0.6);
+        }
 
-    }
-
-    // ======================
-
-    // 退出登录
-
-    // ======================
-
-    window.logout=function(){
-
-        sessionStorage.removeItem(
-
-            AUTH_KEY
-
-        );
-
-        sessionStorage.removeItem(
-
-            AUTH_USER_KEY
-
-        );
-
-        location.reload();
-
-    };
-
-    // ======================
-
-    // 启动
-
-    // ======================
-
-    if(!isAuthenticated()){
-
-        setTimeout(
-
-            showLoginDialog,
-
-            100
-
-        );
-
-    }else{
-
-        setTimeout(()=>{
-
-            const username =
-
-            getLoggedInUser();
-
-            if(username){
-
-                showWelcomeMessage(username);
-
-            }
-
-        },500);
-
-    }
-
-})();
-
-</script>
+        .overlay-footer {
+            font-size: 13px;
+            color: #555266;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
 
-<div class="nav">
-    <a href="/">首页</a>
-    <a href="/about.html">关于我们</a>
-    <a href="/publish.html">近期发布</a>
-    <a href="/contact.html">联系我们</a>
-    <a href="/niutijin.html" style="color: #ffcc00;">牛蹄筋专栏</a>
-    <a href="/mystery.html" style="color: white;">神秘图片</a>
-    <a href="javascript:void(0);" onclick="logout()" style="color: white;">退出登录</a>
-    <a href="/game.html" style="color: #ffcc00;">打地鼠</a>
-</div>
+    <div id="wrapper">
+        <div id="status-bar">
+            <div class="sb-left">
+                <a href="index.html" class="sb-link">川大附中天堂网</a>
+            </div>
+            <div class="sb-right">
+                <div class="data-item">得分: <span id="score-val" class="data-highlight">0</span></div>
+                <div class="data-item">时间: <span id="time-val" class="data-highlight">30</span>s</div>
+            </div>
+        </div>
 
-<div class="game-container">
-    <h1>打地鼠游戏，打中会变脸！</h1>
-    <div class="score-board">
-        <span>王茂钢特供版</span>
-        <span>得分: <span id="score">0</span></span>
-        <span>剩余: <span id="timer">30</span>秒</span>
-    </div>
-    
-    <div class="grid" id="grid"></div>
-    
-    <div>
-        <button onclick="startGame()">开始游戏</button>
-        <button onclick="resetGame()">重置</button>
-    </div>
-    <p style="color: #ddd; margin-top: 15px;">点击冒出来的头像打地鼠！打中会变脸。</p>
-</div>
+        <div id="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            
+            <div id="special-popup">恭喜你已拿下怪物鸡巴！<span class="popup-highlight">分数+78</span></div>
+            
+            <div id="overlay" class="overlay">
+                <div class="overlay-content">
+                    <h2 id="overlay-title">王茂钢打飞机<br>大作战</h2>
+                    <p id="overlay-desc">请先选择对应的网页游玩终端：</p>
+                    
+                    <div class="mode-selector" id="selector-box">
+                        <button class="mode-btn active" id="mode-mobile" onclick="switchMode('mobile')">📱 手机端网页</button>
+                        <button class="mode-btn" id="mode-pc" onclick="switchMode('pc')">🖥️ 电脑端网页</button>
+                    </div>
 
-<script>
-    // ===== 替换成你上传的图片链接 =====
-    const NORMAL_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/CC4B146425F7DD0E59BE6EA1FEEB2470_guxqx7";
-    const HIT_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/1CC8CAAE38A7790104FED8DCB5A9D487_y1nzhn";
-    // =================================
+                    <button id="start-btn" class="main-btn" onclick="startGame()">开始游戏</button>
+                </div>
+
+                <div class="overlay-footer">© 2026 川大附中天堂网出品</div>
+            </div>
+        </div>
+
+        <div id="mobile-controller">
+            <div class="dpad-horizontal">
+                <button class="ctrl-btn" id="btn-left">◀</button>
+                <button class="ctrl-btn" id="btn-right">▶</button>
+            </div>
+            <div class="fire-sector">
+                <button class="ctrl-btn" id="btn-fire">🔥</button>
+            </div>
+        </div>
+    </div>
+
+<script {sandbox="allow-scripts"}>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvas-container');
+    const wrapper = document.getElementById('wrapper');
+
+    let currentDeviceMode = 'mobile'; 
+
+    function resizeCanvas() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function switchMode(mode) {
+        if(isPlaying) return;
+        currentDeviceMode = mode;
+        
+        const btnMobile = document.getElementById('mode-mobile');
+        const btnPC = document.getElementById('mode-pc');
+        const descText = document.getElementById('overlay-desc');
+
+        if(mode === 'pc') {
+            wrapper.classList.add('pc-mode');
+            btnPC.classList.add('active');
+            btnMobile.classList.remove('active');
+            descText.innerHTML = "【电脑端控制指南】<br>移动：键盘 A、D 键 或 ◀ ▶ 方向键<br>开火：空格键 或 J 键";
+            player.size = 44; 
+            player.speed = 7;
+        } else {
+            wrapper.classList.remove('pc-mode');
+            btnMobile.classList.add('active');
+            btnPC.classList.remove('active');
+            descText.innerHTML = "使用下方的独立操纵盘左右键移动<br>红颜色按钮全力开火！";
+            player.size = 40;
+            player.speed = 6;
+        }
+        keys.left = false; keys.right = false; keys.up = false; keys.down = false;
+        setTimeout(resizeCanvas, 50); 
+    }
+
+    const ENEMY_ALIVE_SRC = 'https://i.ibb.co/PG22J8FX/Screenshot-20260517-004026-edit-580395464196329.png'; 
+    const ENEMY_HIT_SRC = 'https://i.ibb.co/F4jXTCjw/retouch-2026051701391671.png';   
+    const ENEMY_SPECIAL_SRC = 'https://i.ibb.co/6JL1y2FC/Screenshot-20260517-151827.png'; 
+    const ENEMY_SPECIAL_HIT_SRC = 'https://i.ibb.co/4b1bxb3/Screenshot-20260517-152843.png'; 
+
+    const imgAlive = new Image(); imgAlive.src = ENEMY_ALIVE_SRC;
+    const imgHit = new Image(); imgHit.src = ENEMY_HIT_SRC;
+    const imgSpecial = new Image(); imgSpecial.src = ENEMY_SPECIAL_SRC;
+    const imgSpecialHit = new Image(); imgSpecialHit.src = ENEMY_SPECIAL_HIT_SRC;
 
     let score = 0;
     let timeLeft = 30;
-    let gameActive = false;
-    let gameInterval = null;
-    let activeHoles = [];       // 当前地鼠所在的洞索引
-    let holeElements = [];
-    let moleTimeouts = [];      // 每个地鼠的自动消失定时器
+    let isPlaying = false;
+    let countdownInterval = null;
+    let popupTimer = null;
 
-    const grid = document.getElementById('grid');
-    const scoreSpan = document.getElementById('score');
-    const timerSpan = document.getElementById('timer');
+    let player = { x: 0, y: 0, size: 40, speed: 6 }; 
+    let bullets = [];
+    let enemies = [];
+    let keys = { up: false, down: false, left: false, right: false };
+    
+    let specialSpawnSeconds = [];
+    let bombSpawnSeconds = []; 
 
-    // 创建9个洞
-    function createGrid() {
-        grid.innerHTML = '';
-        holeElements = [];
-        for (let i = 0; i < 9; i++) {
-            const hole = document.createElement('div');
-            hole.className = 'hole';
-            hole.dataset.index = i;
-            
-            const placeholder = document.createElement('div');
-            placeholder.className = 'empty-placeholder';
-            hole.appendChild(placeholder);
-            
-            hole.onclick = (e) => {
-                e.stopPropagation();
-                // 点空白可能扣分（可选，先不扣）
-            };
-            grid.appendChild(hole);
-            holeElements.push(hole);
+    let bombExplosionParticles = [];
+    let isBombExploding = false;
+    let bombExplosionTimer = 0;
+
+    function drawFighter(x, y, size) {
+        ctx.save();
+        ctx.translate(x + size / 2, y + size / 2);
+
+        if (Math.random() > 0.3) {
+            ctx.fillStyle = Math.random() > 0.5 ? '#ff4757' : '#ffa502';
+            ctx.beginPath();
+            ctx.moveTo(-4, size / 2 - 2);
+            ctx.lineTo(0, size / 2 + 10 + Math.random() * 5);
+            ctx.lineTo(4, size / 2 - 2);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        ctx.fillStyle = '#26af5f'; 
+        ctx.beginPath();
+        ctx.moveTo(0, -size / 4);
+        ctx.lineTo(-size / 2, size / 4);
+        ctx.lineTo(size / 2, size / 4);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#2ed573'; 
+        ctx.beginPath();
+        ctx.moveTo(0, -size / 2);         
+        ctx.lineTo(-size / 6, -size / 6);  
+        ctx.lineTo(-size / 8, size / 2);   
+        ctx.lineTo(size / 8, size / 2);    
+        ctx.lineTo(size / 6, -size / 6);   
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#26af5f';
+        ctx.fillRect(-size / 4, 0, size / 2, size / 12);
+
+        ctx.fillStyle = '#00ffff'; 
+        ctx.beginPath();
+        ctx.moveTo(0, -size / 3);
+        ctx.lineTo(-size / 12, -size / 8);
+        ctx.lineTo(size / 12, -size / 8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, size / 4);
+        ctx.lineTo(0, size / 2);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawBombEnemy(enemy) {
+        ctx.save();
+        ctx.drawImage(imgAlive, enemy.x, enemy.y, enemy.size, enemy.size);
+        if (Math.floor(Date.now() / 150) % 2 === 0) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+            ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+        }
+        ctx.fillStyle = '#ff3838';
+        ctx.font = `bold ${enemy.size * 0.4}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⚡', enemy.x + enemy.size / 2, enemy.y + enemy.size / 2);
+        ctx.restore();
+    }
+
+    function createBombExplosion(bx, by) {
+        bombExplosionParticles = [];
+        isBombExploding = true;
+        bombExplosionTimer = 65; 
+
+        for (let i = 0; i < 90; i++) {
+            let angle = Math.random() * Math.PI * 2;
+            let speed = 4 + Math.random() * 16; 
+            bombExplosionParticles.push({
+                x: bx,
+                y: by,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.04 + Math.random() * 0.08, 
+                size: 3 + Math.random() * 5, 
+                alpha: 1,
+                decay: 0.012 + Math.random() * 0.01,
+                styleGroup: 'fire'
+            });
+        }
+
+        let px = player.x + player.size / 2;
+        let py = player.y + player.size / 2;
+        for (let i = 0; i < 95; i++) {
+            let angle = Math.random() * Math.PI * 2;
+            let speed = 5 + Math.random() * 14;
+            bombExplosionParticles.push({
+                x: px,
+                y: py,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.05 + Math.random() * 0.06,
+                size: 2.5 + Math.random() * 4.5,
+                alpha: 1,
+                decay: 0.014 + Math.random() * 0.012,
+                styleGroup: Math.random() > 0.4 ? 'spark' : 'plasma' 
+            });
         }
     }
 
-    // 清除所有地鼠
-    function clearAllMoles() {
-        for (let i = 0; i < activeHoles.length; i++) {
-            const idx = activeHoles[i];
-            const hole = holeElements[idx];
-            if (hole) {
-                const existingImg = hole.querySelector('.mole-img');
-                if (existingImg) {
-                    existingImg.classList.add('hide-down');
-                    existingImg.classList.remove('show');
-                    setTimeout(() => {
-                        if (existingImg && existingImg.parentNode) {
-                            existingImg.remove();
-                            const newPlaceholder = document.createElement('div');
-                            newPlaceholder.className = 'empty-placeholder';
-                            if (hole.children.length === 0 || hole.children[0] !== newPlaceholder) {
-                                hole.appendChild(newPlaceholder);
-                            }
-                        }
-                    }, 100);
-                }
-            }
-        }
-        for (let t of moleTimeouts) clearTimeout(t);
-        moleTimeouts = [];
-        activeHoles = [];
-    }
+    // 键盘监听
+    window.addEventListener('keydown', e => {
+        if(!isPlaying || isBombExploding) return;
+        if(e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = true;
+        if(e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = true;
+        if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+        if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+        if(e.key === ' ' || e.key === 'j' || e.key === 'J') fireBullet();
+    });
+    window.addEventListener('keyup', e => {
+        if(e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = false;
+        if(e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = false;
+        if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+        if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+    });
 
-    // 移除指定洞的地鼠（缩回）
-    function removeMoleFromHole(index, immediate = false) {
-        const hole = holeElements[index];
-        if (!hole) return;
-        const img = hole.querySelector('.mole-img');
-        if (img) {
-            if (immediate) {
-                img.remove();
-                const placeholder = document.createElement('div');
-                placeholder.className = 'empty-placeholder';
-                if (hole.children.length === 0 || hole.children[0] !== placeholder) {
-                    hole.appendChild(placeholder);
-                }
+    // 🛠️ 核心进化：改用底层 touch 事件 + preventDefault 降维打击，彻底封死高版本手机放大镜/气泡
+    function setupSafeControl(btnId, direction) {
+        const btn = document.getElementById(btnId);
+        
+        btn.addEventListener('contextmenu', e => e.preventDefault());
+
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // 极其关键：切断原生系统的一切长按手势、气泡菜单、放大镜触发
+            if(!isPlaying || isBombExploding) return;
+            if (direction === 'fire') {
+                fireBullet();
             } else {
-                img.classList.add('hide-down');
-                img.classList.remove('show');
-                setTimeout(() => {
-                    if (img && img.parentNode) {
-                        img.remove();
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'empty-placeholder';
-                        if (hole.children.length === 0 || hole.children[0] !== placeholder) {
-                            hole.appendChild(placeholder);
-                        }
-                    }
-                }, 100);
+                keys[direction] = true;
             }
-        }
-        // 从活跃列表中移除
-        const pos = activeHoles.indexOf(index);
-        if (pos !== -1) activeHoles.splice(pos, 1);
+        }, { passive: false });
+
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (direction !== 'fire') {
+                keys[direction] = false;
+            }
+        }, { passive: false });
+
+        btn.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            if (direction !== 'fire') {
+                keys[direction] = false;
+            }
+        }, { passive: false });
     }
 
-    // 在指定洞冒出地鼠
-    function showMoleInHole(index) {
-        if (!gameActive) return;
-        if (activeHoles.includes(index)) return;
-        
-        const hole = holeElements[index];
-        if (!hole) return;
-        
-        // 清除占位符
-        const placeholder = hole.querySelector('.empty-placeholder');
-        if (placeholder) placeholder.remove();
-        
-        // 创建地鼠图片
-        const img = document.createElement('img');
-        img.src = NORMAL_IMG;
-        img.className = 'mole-img';
-        img.onclick = (e) => {
-            e.stopPropagation();
-            hitMole(index, img);
-        };
-        hole.appendChild(img);
-        
-        // 强制重绘后触发动画
-        setTimeout(() => {
-            if (img && img.parentNode) {
-                img.classList.add('show');
-            }
-        }, 5);
-        
-        activeHoles.push(index);
-        
-        // 设置自动消失（2秒后没被打就缩回）
-        const timeout = setTimeout(() => {
-            if (gameActive && activeHoles.includes(index)) {
-                removeMoleFromHole(index);
-            }
-        }, 1400);
-        moleTimeouts.push(timeout);
+    setupSafeControl('btn-left', 'left');
+    setupSafeControl('btn-right', 'right');
+    setupSafeControl('btn-fire', 'fire');
+
+    function fireBullet() {
+        if(!isPlaying || isBombExploding) return;
+        bullets.push({ 
+            x: player.x + player.size / 2 - 3, 
+            y: player.y, 
+            width: 6, 
+            height: currentDeviceMode === 'pc' ? 20 : 18, 
+            speed: currentDeviceMode === 'pc' ? 11 : 9 
+        });
     }
 
-    // 打中地鼠
-    function hitMole(index, imgElement) {
-        if (!gameActive) return;
-        if (!activeHoles.includes(index)) return;
-        
-        // 加分
-        score++;
-        scoreSpan.innerText = score;
-        
-        // 切换成被打图片
-        imgElement.src = HIT_IMG;
-        
-        // 取消自动消失定时器
-        for (let i = 0; i < moleTimeouts.length; i++) {
-            // 清除关联此洞的定时器（简单清所有，后面再重排）
+    function spawnEnemy() {
+        let spawnRate = currentDeviceMode === 'pc' ? 0.05 : 0.04;
+        if(Math.random() < spawnRate) {
+            const enemySize = currentDeviceMode === 'pc' ? 62 : 60; 
+            enemies.push({
+                x: Math.random() * (canvas.width - enemySize),
+                y: -enemySize,
+                size: enemySize,
+                speed: 3.0 + Math.random() * 3.5,
+                status: 'alive', 
+                hitTimer: 0,
+                isSpecial: false,
+                isBomb: false     
+            });
         }
-        // 清除对应定时器
-        const newTimeouts = [];
-        for (let t of moleTimeouts) {
-            // 不清除，直接保留，但需要防止重复缩回
+    }
+
+    function triggerSpecialSpawn() {
+        const baseSize = currentDeviceMode === 'pc' ? 62 : 60;
+        const specialSize = baseSize * 2.4; 
+        enemies.push({
+            x: Math.random() * (canvas.width - specialSize),
+            y: -specialSize,
+            size: specialSize,
+            speed: 5.5, 
+            status: 'alive',
+            hitTimer: 0,
+            isSpecial: true,
+            isBomb: false
+        });
+    }
+
+    function triggerBombSpawn() {
+        const enemySize = currentDeviceMode === 'pc' ? 62 : 60; 
+        enemies.push({
+            x: Math.random() * (canvas.width - enemySize),
+            y: -enemySize,
+            size: enemySize,
+            speed: 3.0 + Math.random() * 3.5, 
+            status: 'alive',
+            hitTimer: 0,
+            isSpecial: false,
+            isBomb: true
+        });
+    }
+
+    function triggerSpecialPopup() {
+        const popup = document.getElementById('special-popup');
+        popup.style.display = 'block';
+        if(popupTimer) clearTimeout(popupTimer);
+        popupTimer = setTimeout(() => { popup.style.display = 'none'; }, 1500); 
+    }
+
+    function drawStaticScene() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (!isBombExploding) {
+            drawFighter(player.x, player.y, player.size);
         }
         
-        // 延迟缩回并消失
-        setTimeout(() => {
-            if (imgElement && imgElement.parentNode) {
-                imgElement.classList.add('hide-down');
-                imgElement.classList.remove('show');
-                setTimeout(() => {
-                    if (imgElement && imgElement.parentNode) {
-                        imgElement.remove();
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'empty-placeholder';
-                        const hole = holeElements[index];
-                        if (hole && (hole.children.length === 0 || hole.children[0] !== placeholder)) {
-                            hole.appendChild(placeholder);
-                        }
-                    }
-                }, 100);
-            }
-            // 从活跃列表中移除
-            const pos = activeHoles.indexOf(index);
-            if (pos !== -1) activeHoles.splice(pos, 1);
-        }, 150);
+        for (let b of bullets) {
+            ctx.fillStyle = '#fff200';
+            ctx.fillRect(b.x, b.y, b.width, b.height);
+        }
         
-        // 被打后0.3秒内在另一个洞重新冒出来（保持压力）
-        setTimeout(() => {
-            if (gameActive) {
-                let newIndex;
-                do {
-                    newIndex = Math.floor(Math.random() * 9);
-                } while (activeHoles.includes(newIndex) && activeHoles.length < 9);
-                if (!activeHoles.includes(newIndex)) {
-                    showMoleInHole(newIndex);
+        for (let enemy of enemies) {
+            if (enemy.status === 'alive') {
+                if (enemy.isBomb) {
+                    if (isBombExploding) continue; 
+                    drawBombEnemy(enemy);
+                } else if(enemy.isSpecial) {
+                    ctx.drawImage(imgSpecial, enemy.x, enemy.y, enemy.size, enemy.size);
+                } else {
+                    ctx.drawImage(imgAlive, enemy.x, enemy.y, enemy.size, enemy.size);
+                }
+            } else if (enemy.status === 'hit') {
+                if(enemy.isSpecial) {
+                    ctx.drawImage(imgSpecialHit, enemy.x, enemy.y, enemy.size, enemy.size);
+                } else {
+                    ctx.drawImage(imgHit, enemy.x, enemy.y, enemy.size, enemy.size);
                 }
             }
-        }, 350);
+        }
     }
 
-    // 随机产生地鼠（每1秒左右出1只）
-    let moleGenerator = null;
-    function startMoleGenerator() {
-        if (moleGenerator) clearInterval(moleGenerator);
-        moleGenerator = setInterval(() => {
-            if (!gameActive) return;
-            // 控制最多同时出现3只
-            if (activeHoles.length >= 1) return;
-            let available = [];
-            for (let i = 0; i < 9; i++) {
-                if (!activeHoles.includes(i)) available.push(i);
+    function gameLoop() {
+        if(!isPlaying) return;
+
+        if (isBombExploding) {
+            drawStaticScene();
+
+            for (let i = bombExplosionParticles.length - 1; i >= 0; i--) {
+                let p = bombExplosionParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity; 
+                p.vx *= 0.95;      
+                p.vy *= 0.95;
+                p.size *= 0.97;    
+                p.alpha -= p.decay;
+
+                if (p.size <= 0.2 || p.alpha <= 0) {
+                    bombExplosionParticles.splice(i, 1);
+                    continue;
+                }
+                
+                let r, g, b;
+                if (p.styleGroup === 'fire') {
+                    r = 255;
+                    g = Math.floor(210 * p.alpha);
+                    b = Math.floor(55 * p.alpha * p.alpha);
+                } else if (p.styleGroup === 'spark') {
+                    r = 255;
+                    g = Math.floor(235 * (p.alpha * 0.4 + 0.6));
+                    b = Math.floor(130 + 125 * p.alpha);
+                } else {
+                    r = Math.floor(45 * p.alpha);
+                    g = Math.floor(213 + 42 * p.alpha);
+                    b = Math.floor(115 * p.alpha);
+                }
+                
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.globalCompositeOperation = 'screen';
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
-            if (available.length > 0) {
-                const randomIndex = available[Math.floor(Math.random() * available.length)];
-                showMoleInHole(randomIndex);
+
+            bombExplosionTimer--;
+            if (bombExplosionTimer <= 0 || bombExplosionParticles.length === 0) {
+                isBombExploding = false;
+                endGame('bomb'); 
+                return;
             }
-        }, 900);
+            requestAnimationFrame(gameLoop); 
+            return;
+        }
+
+        if (keys.up && player.y > 0) player.y -= player.speed;
+        if (keys.down && player.y < canvas.height - player.size) player.y += player.speed;
+        if (keys.left && player.x > 0) player.x -= player.speed;
+        if (keys.right && player.x < canvas.width - player.size) player.x += player.speed;
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            let b = bullets[i];
+            b.y -= b.speed;
+            if(b.y < 0) bullets.splice(i, 1);
+        }
+
+        spawnEnemy();
+
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            let enemy = enemies[i];
+
+            if (enemy.status === 'alive') {
+                enemy.y += enemy.speed;
+
+                if (enemy.y > canvas.height) {
+                    enemies.splice(i, 1);
+                    continue;
+                }
+
+                if (player.x < enemy.x + enemy.size &&
+                    player.x + player.size > enemy.x &&
+                    player.y < enemy.y + enemy.size &&
+                    player.y + player.size > enemy.y) {
+                    if (enemy.isBomb) {
+                        clearInterval(countdownInterval);
+                        createBombExplosion(enemy.x + enemy.size/2, enemy.y + enemy.size/2);
+                        requestAnimationFrame(gameLoop); 
+                    } else {
+                        endGame('hit'); 
+                    }
+                    return; 
+                }
+
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    let bullet = bullets[j];
+                    if (bullet.x < enemy.x + enemy.size &&
+                        bullet.x + bullet.width > enemy.x &&
+                        bullet.y < enemy.y + enemy.size &&
+                        bullet.y + bullet.height > enemy.y) {
+                        
+                        bullets.splice(j, 1);
+
+                        if (enemy.isBomb) {
+                            clearInterval(countdownInterval);
+                            createBombExplosion(enemy.x + enemy.size/2, enemy.y + enemy.size/2);
+                            requestAnimationFrame(gameLoop); 
+                            return; 
+                        }
+                        
+                        enemy.status = 'hit';
+                        enemy.hitTimer = 0;
+                        
+                        if(enemy.isSpecial) {
+                            score += 78;
+                            triggerSpecialPopup();
+                        } else {
+                            score += 10;
+                        }
+                        document.getElementById('score-val').innerText = score;
+                        break; 
+                    }
+                }
+            } else if (enemy.status === 'hit') {
+                enemy.hitTimer++;
+                let maxFreezeFrames = enemy.isSpecial ? 18 : 6; 
+                if (enemy.hitTimer >= maxFreezeFrames) { 
+                    enemies.splice(i, 1); 
+                }
+            }
+        }
+
+        drawStaticScene();
+        requestAnimationFrame(gameLoop);
     }
 
-    // 开始游戏
     function startGame() {
-        if (gameActive) return;
-        resetGame();
-        gameActive = true;
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('special-popup').style.display = 'none';
         
-        // 倒计时
-        gameInterval = setInterval(() => {
-            if (timeLeft <= 1) {
-                endGame();
-            } else {
-                timeLeft--;
-                timerSpan.innerText = timeLeft;
-            }
-        }, 1000);
-        
-        startMoleGenerator();
-        
-        // 开局立刻出几只活跃
-        setTimeout(() => {
-            for (let i = 0; i < 2; i++) {
-                if (!gameActive) break;
-                let available = [];
-                for (let j = 0; j < 9; j++) {
-                    if (!activeHoles.includes(j)) available.push(j);
-                }
-                if (available.length) {
-                    showMoleInHole(available[Math.floor(Math.random() * available.length)]);
-                }
-            }
-        }, 200);
-    }
-    
-    // 结束游戏
-    function endGame() {
-        gameActive = false;
-        if (gameInterval) clearInterval(gameInterval);
-        if (moleGenerator) clearInterval(moleGenerator);
-        moleGenerator = null;
-        clearAllMoles();
-        alert(`游戏结束！\n\n✨ 最终得分：${score} 分 ✨\n\n点击“开始游戏”继续挑战！`);
-    }
-    
-    // 重置游戏
-    function resetGame() {
-        if (gameActive) {
-            gameActive = false;
-            if (gameInterval) clearInterval(gameInterval);
-            if (moleGenerator) clearInterval(moleGenerator);
-            moleGenerator = null;
+        if (currentDeviceMode === 'mobile') {
+            document.getElementById('mobile-controller').style.display = 'flex';
+        } else {
+            document.getElementById('mobile-controller').style.display = 'none';
         }
-        clearAllMoles();
+
+        resizeCanvas();
+        
         score = 0;
         timeLeft = 30;
-        scoreSpan.innerText = score;
-        timerSpan.innerText = timeLeft;
-        activeHoles = [];
-        for (let t of moleTimeouts) clearTimeout(t);
-        moleTimeouts = [];
-        // 重建占位符
-        for (let i = 0; i < holeElements.length; i++) {
-            const hole = holeElements[i];
-            const existingImg = hole.querySelector('.mole-img');
-            if (existingImg) existingImg.remove();
-            if (!hole.querySelector('.empty-placeholder')) {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'empty-placeholder';
-                hole.appendChild(placeholder);
+        bullets = [];
+        enemies = [];
+        isBombExploding = false;
+        bombExplosionParticles = [];
+        player.x = canvas.width / 2 - player.size / 2;
+        player.y = canvas.height * 0.85; 
+        
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('time-val').innerText = timeLeft;
+
+        specialSpawnSeconds = [];
+        const spawnCount = Math.floor(Math.random() * 2) + 1; 
+        while(specialSpawnSeconds.length < spawnCount) {
+            let targetSecond = Math.floor(Math.random() * 20) + 5; 
+            if(!specialSpawnSeconds.includes(targetSecond)) { specialSpawnSeconds.push(targetSecond); }
+        }
+
+        bombSpawnSeconds = [];
+        const bombCount = Math.floor(Math.random() * 3); 
+        while(bombSpawnSeconds.length < bombCount) {
+            let bombSecond = Math.floor(Math.random() * 22) + 4;
+            if(!specialSpawnSeconds.includes(bombSecond) && !bombSpawnSeconds.includes(bombSecond)) {
+                bombSpawnSeconds.push(bombSecond);
             }
         }
+        
+        isPlaying = true;
+        gameLoop();
+
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('time-val').innerText = timeLeft;
+            if(specialSpawnSeconds.includes(timeLeft)) { triggerSpecialSpawn(); }
+            if(bombSpawnSeconds.includes(timeLeft)) { triggerBombSpawn(); }
+            if(timeLeft <= 0) { endGame('timeout'); }
+        }, 1000);
     }
 
-    createGrid();
-</script>
+    function endGame(reason) {
+        isPlaying = false;
+        clearInterval(countdownInterval);
+        if(popupTimer) clearTimeout(popupTimer);
+        document.getElementById('special-popup').style.display = 'none';
+        
+        document.getElementById('mobile-controller').style.display = 'none';
 
+        keys.left = false; keys.right = false; keys.up = false; keys.down = false;
+
+        const titleElement = document.getElementById('overlay-title');
+        const descElement = document.getElementById('overlay-desc');
+        document.getElementById('selector-box').style.display = 'flex'; 
+        
+        titleElement.classList.remove('success-title', 'bomb-title');
+
+        if (reason === 'bomb') {
+            titleElement.classList.add('bomb-title'); 
+            titleElement.innerHTML = "炸弹爆炸<br>全军覆没！";
+            descElement.innerHTML = `你误击了高危炸弹肛毛！<br>剧烈连锁爆炸已将你连同战机彻底湮灭！`;
+        } else if (reason === 'hit') {
+            titleElement.innerHTML = "战机坠毁<br>游戏结束！";
+            descElement.innerHTML = `很遗憾，你被肛毛撞击坠毁了！💤<br><br>最终斩获积分：<span style="color:#fff200; font-weight:bold;">${score}</span> 分`;
+        } else {
+            titleElement.classList.add('success-title'); 
+            titleElement.innerHTML = "时间到<br>完美生还！";
+            descElement.innerHTML = `恭喜你在猛烈攻势下撑过了 30 秒！🏆<br><br>最终统计算分：<span style="color:#fff200; font-weight:bold;">${score}</span> 分`;
+        }
+        
+        document.getElementById('start-btn').innerText = "再次挑战";
+        document.getElementById('overlay').style.display = 'flex';
+        setTimeout(resizeCanvas, 50); 
+    }
+
+    switchMode('mobile');
+</script>
 </body>
 </html>
