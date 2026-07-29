@@ -1,438 +1,336 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>打地鼠游戏 - 牛蹄筋专栏</title>
-    <meta charset="utf-8">
-       <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打地鼠 · CDFC</title>
+    <style>
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
         body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a472a, #2d5a3b);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0a0e27;
             min-height: 100vh;
-        }
-        .nav {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .nav a {
-            color: white;
-            text-decoration: none;
-            margin-right: 20px;
-            padding: 8px 16px;
-        }
-        .nav a:hover {
-            background-color: #555;
-            border-radius: 5px;
-        }
-        .game-container {
-            background: #8B6914;
-            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+        }
+        .game-wrapper {
+            background: #1a1f3a;
+            border-radius: 30px;
+            padding: 30px 25px 35px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         h1 {
-            color: #FFD700;
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 10px;
+            color: #00d4ff;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
         }
-        .score-board {
-            background: #2c2c2c;
-            padding: 15px;
-            border-radius: 15px;
+        .sub {
+            color: #8892b0;
+            font-size: 14px;
             margin-bottom: 20px;
+        }
+        .info {
             display: flex;
-            justify-content: space-around;
-            color: #FFD700;
-            font-size: 24px;
-            font-weight: bold;
+            justify-content: space-between;
+            background: #0f1322;
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            color: #c0c8e0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .info span:first-child {
+            color: #ffd700;
+        }
+        .info span:last-child {
+            color: #ff6b6b;
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin: 20px 0;
+            gap: 14px;
+            margin: 20px 0 25px;
         }
         .hole {
-            background: radial-gradient(circle at 30% 30%, #4a2a0a, #2a1a05);
+            background: radial-gradient(circle at 30% 30%, #3a2a1a, #1f140c);
+            aspect-ratio: 1 / 1;
             border-radius: 50%;
-            padding: 15px;
-            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: inset 0 8px 12px rgba(0,0,0,0.6), 0 5px 5px rgba(0,0,0,0.3);
+            box-shadow: inset 0 6px 12px rgba(0,0,0,0.7), 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
             position: relative;
             overflow: hidden;
         }
-        .mole-img {
-            width: 90%;
-            height: 90%;
-            border-radius: 50%;
+        .hole:active {
+            transform: scale(0.95);
+        }
+        .hole img {
+            width: 85%;
+            height: 85%;
             object-fit: cover;
-            cursor: pointer;
-            position: absolute;
-            bottom: -100%;
-            left: 5%;
-            transition: bottom 0.12s ease-out;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .mole-img.show {
-            bottom: 5%;
-        }
-        .mole-img.hide-down {
-            bottom: -100%;
-            transition: bottom 0.1s ease-in;
-        }
-        .empty-placeholder {
-            width: 80%;
-            height: 80%;
-            background: #3e2710;
             border-radius: 50%;
+            display: block;
+            transition: 0.08s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
-        button {
-            background: #FF6600;
-            color: white;
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #2a2f4a;
             border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 30px;
+            color: #e0e8f0;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            margin: 10px;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        button:hover {
-            background: #ff8833;
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
-        .timer {
-            font-size: 28px;
-            color: #fff;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
         }
-        @keyframes bounce {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(238, 90, 36, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .footer {
+            margin-top: 18px;
+            color: #5a6a8a;
+            font-size: 13px;
+        }
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<div class="game-container">
-    <h1>打地鼠</h1>
-    <div class="score-board">
-        <span>🐭 王茂钢特供版</span>
-        <span>得分: <span id="score">0</span></span>
-        <span>⏱️ 剩余: <span id="timer">30</span>秒</span>
+<div class="game-wrapper">
+    <h1>🔨 打地鼠</h1>
+    <div class="sub">看看你能打多少分！</div>
+
+    <div class="info">
+        <span>🏆 得分: <span id="score">0</span></span>
+        <span>⏱️ <span id="timer">30</span>s</span>
     </div>
-    
+
     <div class="grid" id="grid"></div>
-    
-    <div>
-        <button onclick="startGame()">开始游戏</button>
-        <button onclick="resetGame()">🔄</button>
+
+    <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn">▶ 开始</button>
+        <button class="btn btn-danger" id="resetBtn">⟳ 重置</button>
     </div>
-    <p style="color: #ddd; margin-top: 15px;">点击冒出来的头像打地鼠！打中会变脸</p>
+    <div class="footer">
+        <a href="/">← 返回首页</a>
+    </div>
 </div>
 
 <script>
-    // ===== 替换成你上传的图片链接 =====
-    const NORMAL_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/CC4B146425F7DD0E59BE6EA1FEEB2470_guxqx7";
-    const HIT_IMG = "https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/1CC8CAAE38A7790104FED8DCB5A9D487_y1nzhn";
-    // =================================
+    // ============================================================
+    // 🔽 这里替换成你自己的图片链接（4 张图）
+    // ============================================================
+    const IMG_NORMAL = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/CC4B146425F7DD0E59BE6EA1FEEB2470_guxqx7';          // 普通地鼠
+    const IMG_NORMAL_HIT = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/1CC8CAAE38A7790104FED8DCB5A9D487_y1nzhn'; // 普通地鼠被击打
+    const IMG_GOLDEN = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1071_hcibbd';      // 金色特殊地鼠
+    const IMG_GOLDEN_HIT = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0767_bqqhb7'; // 金色被击打
+    // ============================================================
 
+    // ---------- 游戏状态 ----------
     let score = 0;
     let timeLeft = 30;
-    let gameActive = false;
-    let gameInterval = null;
-    let activeHoles = [];       // 当前地鼠所在的洞索引
-    let holeElements = [];
-    let moleTimeouts = [];      // 每个地鼠的自动消失定时器
+    let isPlaying = false;
+    let timerId = null;
+    let spawnId = null;
+    let currentMoleIndex = -1;
+    let isGolden = false;
+    let isHitPending = false;
 
     const grid = document.getElementById('grid');
     const scoreSpan = document.getElementById('score');
     const timerSpan = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
 
-    // 创建9个洞
-    function createGrid() {
+    // ---------- 创建 9 个洞 ----------
+    function buildGrid() {
         grid.innerHTML = '';
-        holeElements = [];
         for (let i = 0; i < 9; i++) {
             const hole = document.createElement('div');
             hole.className = 'hole';
             hole.dataset.index = i;
-            
-            const placeholder = document.createElement('div');
-            placeholder.className = 'empty-placeholder';
-            hole.appendChild(placeholder);
-            
-            hole.onclick = (e) => {
-                e.stopPropagation();
-                // 点空白可能扣分（可选，先不扣）
-            };
+            hole.addEventListener('click', () => handleClick(i));
             grid.appendChild(hole);
-            holeElements.push(hole);
         }
     }
 
-    // 清除所有地鼠
-    function clearAllMoles() {
-        for (let i = 0; i < activeHoles.length; i++) {
-            const idx = activeHoles[i];
-            const hole = holeElements[idx];
-            if (hole) {
-                const existingImg = hole.querySelector('.mole-img');
-                if (existingImg) {
-                    existingImg.classList.add('hide-down');
-                    existingImg.classList.remove('show');
-                    setTimeout(() => {
-                        if (existingImg && existingImg.parentNode) {
-                            existingImg.remove();
-                            const newPlaceholder = document.createElement('div');
-                            newPlaceholder.className = 'empty-placeholder';
-                            if (hole.children.length === 0 || hole.children[0] !== newPlaceholder) {
-                                hole.appendChild(newPlaceholder);
-                            }
-                        }
-                    }, 100);
-                }
-            }
-        }
-        for (let t of moleTimeouts) clearTimeout(t);
-        moleTimeouts = [];
-        activeHoles = [];
+    // ---------- 清除所有地鼠 ----------
+    function clearMoles() {
+        document.querySelectorAll('.hole img').forEach(img => img.remove());
+        currentMoleIndex = -1;
+        isGolden = false;
+        isHitPending = false;
     }
 
-    // 移除指定洞的地鼠（缩回）
-    function removeMoleFromHole(index, immediate = false) {
-        const hole = holeElements[index];
-        if (!hole) return;
-        const img = hole.querySelector('.mole-img');
-        if (img) {
-            if (immediate) {
-                img.remove();
-                const placeholder = document.createElement('div');
-                placeholder.className = 'empty-placeholder';
-                if (hole.children.length === 0 || hole.children[0] !== placeholder) {
-                    hole.appendChild(placeholder);
-                }
-            } else {
-                img.classList.add('hide-down');
-                img.classList.remove('show');
-                setTimeout(() => {
-                    if (img && img.parentNode) {
-                        img.remove();
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'empty-placeholder';
-                        if (hole.children.length === 0 || hole.children[0] !== placeholder) {
-                            hole.appendChild(placeholder);
-                        }
-                    }
-                }, 100);
-            }
-        }
-        // 从活跃列表中移除
-        const pos = activeHoles.indexOf(index);
-        if (pos !== -1) activeHoles.splice(pos, 1);
-    }
+    // ---------- 显示地鼠 ----------
+    function spawnMole() {
+        if (!isPlaying) return;
 
-    // 在指定洞冒出地鼠
-    function showMoleInHole(index) {
-        if (!gameActive) return;
-        if (activeHoles.includes(index)) return;
-        
-        const hole = holeElements[index];
-        if (!hole) return;
-        
-        // 清除占位符
-        const placeholder = hole.querySelector('.empty-placeholder');
-        if (placeholder) placeholder.remove();
-        
-        // 创建地鼠图片
+        // 清除上一个地鼠
+        clearMoles();
+
+        // 随机选洞
+        const index = Math.floor(Math.random() * 9);
+        currentMoleIndex = index;
+        isGolden = Math.random() < 0.20; // 20% 概率金色
+
+        const hole = grid.children[index];
         const img = document.createElement('img');
-        img.src = NORMAL_IMG;
-        img.className = 'mole-img';
-        img.onclick = (e) => {
-            e.stopPropagation();
-            hitMole(index, img);
-        };
+        img.src = isGolden ? IMG_GOLDEN : IMG_NORMAL;
+        img.alt = '地鼠';
+        img.style.animation = 'pop 0.15s ease';
         hole.appendChild(img);
-        
-        // 强制重绘后触发动画
-        setTimeout(() => {
-            if (img && img.parentNode) {
-                img.classList.add('show');
+
+        // 自动消失（1.2 秒）
+        if (spawnId) clearTimeout(spawnId);
+        spawnId = setTimeout(() => {
+            if (isPlaying) {
+                clearMoles();
+                spawnMole(); // 递归生成下一个
             }
-        }, 5);
-        
-        activeHoles.push(index);
-        
-        // 设置自动消失（2秒后没被打就缩回）
-        const timeout = setTimeout(() => {
-            if (gameActive && activeHoles.includes(index)) {
-                removeMoleFromHole(index);
-            }
-        }, 1800);
-        moleTimeouts.push(timeout);
+        }, 1200);
     }
 
-    // 打中地鼠
-    function hitMole(index, imgElement) {
-        if (!gameActive) return;
-        if (!activeHoles.includes(index)) return;
-        
+    // ---------- 点击洞 ----------
+    function handleClick(index) {
+        if (!isPlaying) return;
+        if (index !== currentMoleIndex) return;
+        if (isHitPending) return;
+
+        const hole = grid.children[index];
+        const img = hole.querySelector('img');
+        if (!img) return;
+
+        isHitPending = true;
+
         // 加分
-        score++;
-        scoreSpan.innerText = score;
-        
-        // 切换成被打图片
-        imgElement.src = HIT_IMG;
-        
-        // 取消自动消失定时器
-        for (let i = 0; i < moleTimeouts.length; i++) {
-            // 清除关联此洞的定时器（简单清所有，后面再重排）
-        }
-        // 清除对应定时器
-        const newTimeouts = [];
-        for (let t of moleTimeouts) {
-            // 不清除，直接保留，但需要防止重复缩回
-        }
-        
-        // 延迟缩回并消失
-        setTimeout(() => {
-            if (imgElement && imgElement.parentNode) {
-                imgElement.classList.add('hide-down');
-                imgElement.classList.remove('show');
-                setTimeout(() => {
-                    if (imgElement && imgElement.parentNode) {
-                        imgElement.remove();
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'empty-placeholder';
-                        const hole = holeElements[index];
-                        if (hole && (hole.children.length === 0 || hole.children[0] !== placeholder)) {
-                            hole.appendChild(placeholder);
-                        }
-                    }
-                }, 100);
-            }
-            // 从活跃列表中移除
-            const pos = activeHoles.indexOf(index);
-            if (pos !== -1) activeHoles.splice(pos, 1);
-        }, 150);
-        
-        // 被打后0.3秒内在另一个洞重新冒出来（保持压力）
-        setTimeout(() => {
-            if (gameActive) {
-                let newIndex;
-                do {
-                    newIndex = Math.floor(Math.random() * 9);
-                } while (activeHoles.includes(newIndex) && activeHoles.length < 9);
-                if (!activeHoles.includes(newIndex)) {
-                    showMoleInHole(newIndex);
-                }
-            }
-        }, 350);
-    }
+        const points = isGolden ? 3 : 1;
+        score += points;
+        scoreSpan.textContent = score;
 
-    // 随机产生地鼠（每1秒左右出1只）
-    let moleGenerator = null;
-    function startMoleGenerator() {
-        if (moleGenerator) clearInterval(moleGenerator);
-        moleGenerator = setInterval(() => {
-            if (!gameActive) return;
-            // 控制最多同时出现3只
-            if (activeHoles.length >= 3) return;
-            let available = [];
-            for (let i = 0; i < 9; i++) {
-                if (!activeHoles.includes(i)) available.push(i);
-            }
-            if (available.length > 0) {
-                const randomIndex = available[Math.floor(Math.random() * available.length)];
-                showMoleInHole(randomIndex);
-            }
-        }, 900);
-    }
+        // 切换到击中图片
+        img.src = isGolden ? IMG_GOLDEN_HIT : IMG_NORMAL_HIT;
+        img.style.animation = 'none'; // 重置动画
 
-    // 开始游戏
-    function startGame() {
-        if (gameActive) return;
-        resetGame();
-        gameActive = true;
-        
-        // 倒计时
-        gameInterval = setInterval(() => {
-            if (timeLeft <= 1) {
-                endGame();
+        // 清除自动消失定时器
+        if (spawnId) clearTimeout(spawnId);
+
+        // 0.25 秒后移除地鼠，生成下一个
+        setTimeout(() => {
+            if (isPlaying) {
+                clearMoles();
+                isHitPending = false;
+                spawnMole();
             } else {
-                timeLeft--;
-                timerSpan.innerText = timeLeft;
+                clearMoles();
+                isHitPending = false;
+            }
+        }, 250);
+    }
+
+    // ---------- 倒计时 ----------
+    function startTimer() {
+        timeLeft = 30;
+        timerSpan.textContent = timeLeft;
+        timerId = setInterval(() => {
+            timeLeft--;
+            timerSpan.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                endGame();
             }
         }, 1000);
-        
-        startMoleGenerator();
-        
-        // 开局立刻出几只活跃
-        setTimeout(() => {
-            for (let i = 0; i < 2; i++) {
-                if (!gameActive) break;
-                let available = [];
-                for (let j = 0; j < 9; j++) {
-                    if (!activeHoles.includes(j)) available.push(j);
-                }
-                if (available.length) {
-                    showMoleInHole(available[Math.floor(Math.random() * available.length)]);
-                }
-            }
-        }, 200);
     }
-    
-    // 结束游戏
+
+    // ---------- 结束游戏 ----------
     function endGame() {
-        gameActive = false;
-        if (gameInterval) clearInterval(gameInterval);
-        if (moleGenerator) clearInterval(moleGenerator);
-        moleGenerator = null;
-        clearAllMoles();
-        alert(`游戏结束！\n\n✨ 最终得分：${score} 分 ✨\n\n点击“开始游戏”继续挑战！`);
+        isPlaying = false;
+        clearInterval(timerId);
+        clearTimeout(spawnId);
+        clearMoles();
+        startBtn.disabled = false;
+        alert(`⏰ 时间到！\n你的得分：${score} 分`);
     }
-    
-    // 重置游戏
+
+    // ---------- 开始游戏 ----------
+    function startGame() {
+        if (isPlaying) return;
+        resetGame();
+        isPlaying = true;
+        startBtn.disabled = true;
+        score = 0;
+        scoreSpan.textContent = '0';
+        startTimer();
+        // 延迟一点生成第一个地鼠
+        setTimeout(() => {
+            if (isPlaying) spawnMole();
+        }, 300);
+    }
+
+    // ---------- 重置 ----------
     function resetGame() {
-        if (gameActive) {
-            gameActive = false;
-            if (gameInterval) clearInterval(gameInterval);
-            if (moleGenerator) clearInterval(moleGenerator);
-            moleGenerator = null;
-        }
-        clearAllMoles();
+        isPlaying = false;
+        clearInterval(timerId);
+        clearTimeout(spawnId);
+        clearMoles();
         score = 0;
         timeLeft = 30;
-        scoreSpan.innerText = score;
-        timerSpan.innerText = timeLeft;
-        activeHoles = [];
-        for (let t of moleTimeouts) clearTimeout(t);
-        moleTimeouts = [];
-        // 重建占位符
-        for (let i = 0; i < holeElements.length; i++) {
-            const hole = holeElements[i];
-            const existingImg = hole.querySelector('.mole-img');
-            if (existingImg) existingImg.remove();
-            if (!hole.querySelector('.empty-placeholder')) {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'empty-placeholder';
-                hole.appendChild(placeholder);
-            }
-        }
+        scoreSpan.textContent = '0';
+        timerSpan.textContent = '30';
+        startBtn.disabled = false;
+        isHitPending = false;
     }
 
-    createGrid();
+    // ---------- 初始化 ----------
+    buildGrid();
+    resetBtn.addEventListener('click', resetGame);
+    startBtn.addEventListener('click', startGame);
 </script>
-
 </body>
 </html>
