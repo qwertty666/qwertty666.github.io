@@ -3,19 +3,15 @@
     <head>
     <title>川大附中地狱网</title>
     <meta charset="utf-8">
- <script>
-    // ============================================================
+       <script>
+// ============================================================
 // 后端验证系统（调用 Cloudflare Worker API）
-// 支持两种模式：独立 API 或 合并 Worker
 // ============================================================
 
 (function() {
     // ---------- 配置 ----------
-    // 模式一（推荐）：合并 Worker，登录端点为 /login（同域）
+    // ⚠️ 替换成你的 Worker 自定义域名
     const API_URL = 'https://api.cdfz.de5.net';
-    
-    // 模式二：独立 API Worker（如果使用，请注释掉上一行，取消注释下一行）
-    // const API_URL = 'https://api.cdfz.de5.net';
     
     // 会话存储 Key
     const AUTH_KEY = 'site_authenticated';
@@ -37,12 +33,11 @@
 
     // ---------- 显示欢迎信息 ----------
     function showWelcomeMessage(username) {
-        // 用户名到称呼的映射（修正：补上缺失的逗号）
+        // 用户名到称呼的映射
         const nameMap = {
-            '32': 'Fyh',
-            '33': 'Hxb',
-            '39': 'sir',           // ← 这里补了逗号
-            '11': 'JLCY'           // ← 去掉了多余空格
+            '32': 'Fyh同学',
+            '33': 'Hxb同学',
+            '39': '站长'
         };
         const displayName = nameMap[username] || username;
         
@@ -65,7 +60,7 @@
                 box-shadow: 0 4px 15px rgba(0,0,0,0.3);
                 animation: slideDown 0.5s ease;
             ">
-                welcome，${displayName}！
+                👋 欢迎回来，${displayName}！
             </div>
             <style>
                 @keyframes slideDown {
@@ -114,7 +109,7 @@
                 border: 1px solid #333;
                 text-align: center;
             ">
-                <h2 style="color: white; margin: 0 0 8px 0;">登录验证</h2>
+                <h2 style="color: white; margin: 0 0 8px 0;">🔐 验证身份</h2>
                 <p style="color: #888; margin: 0 0 24px 0; font-size: 14px;">请输入你的账号和密码</p>
                 
                 <input type="text" id="login-username" placeholder="账号" style="
@@ -217,7 +212,7 @@
                 }
             } catch (error) {
                 // 网络错误
-                errorEl.textContent = '网络异常，请稍后重试';
+                errorEl.textContent = '❌ 网络异常，请稍后重试';
                 errorEl.style.display = 'block';
                 console.error('登录请求失败:', error);
             } finally {
@@ -244,7 +239,7 @@
         });
     }
 
-    // ---------- 退出登录 ----------
+    // ---------- 退出登录（可选） ----------
     window.logout = function() {
         sessionStorage.removeItem(AUTH_KEY);
         sessionStorage.removeItem(AUTH_USER_KEY);
@@ -262,8 +257,8 @@
             setTimeout(() => showWelcomeMessage(username), 300);
         }
     }
-})(); 
-</script>
+})();
+</script> 
     <style>
     body {
         font-family: 'Segoe UI', Arial, sans-serif;
