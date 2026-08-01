@@ -217,13 +217,13 @@
                 }
             } catch (error) {
                 // 网络错误
-                errorEl.textContent = '❌ 网络异常，请稍后重试';
+                errorEl.textContent = '❌ The network is abnormal. Please try again later.';
                 errorEl.style.display = 'block';
                 console.error('登录请求失败:', error);
             } finally {
                 // 恢复按钮状态
                 submitBtn.disabled = false;
-                submitBtn.textContent = '登 录';
+                submitBtn.textContent = 'GO';
             }
         }
 
