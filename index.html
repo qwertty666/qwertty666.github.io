@@ -91,7 +91,8 @@ async function loadContent() {
     }
 
     try {
-        const res = await fetch(CONTENT_URL, {
+        // 👇 修改：请求时带上 ?user=用户名
+        const res = await fetch(CONTENT_URL + '?user=' + encodeURIComponent(username), {
             credentials: 'include'
         });
         if (!res.ok) {
@@ -380,9 +381,5 @@ if (!isAuthenticated()) {
     <div id="app" style="max-width:1000px; margin:0 auto; padding:0; min-height:100vh;">
         <!-- 登录后由 Worker 动态填充 -->
     </div>
-
-    <script>
-    // 验证代码（改过之后）
-    </script>
 </body>
 </html>
