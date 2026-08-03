@@ -156,6 +156,194 @@
     </style>
 </head>
 <body>
-<p>本站于2027年7月1日前已停止访问。</p>
+<div class="game-wrapper">
+    <h1>打地鼠</h1>
+    <div class="sub">看看你能打多少分！</div>
+
+    <div class="info">
+        <span>得分: <span id="score">0</span></span>
+        <span>⏱️ <span id="timer">30</span>s</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn">▶ 开始</button>
+        <button class="btn btn-danger" id="resetBtn">⟳ 重置</button>
+    </div>
+    <div class="footer">
+        <a href="/">← 返回首页</a>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // 🔽 这里替换成你自己的图片链接（4 张图）
+    // ============================================================
+    const IMG_NORMAL = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/CC4B146425F7DD0E59BE6EA1FEEB2470_guxqx7';          // 普通地鼠
+    const IMG_NORMAL_HIT = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/1CC8CAAE38A7790104FED8DCB5A9D487_y1nzhn'; // 普通地鼠被击打
+    const IMG_GOLDEN = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1071_hcibbd';      // 金色特殊地鼠
+    const IMG_GOLDEN_HIT = 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0767_bqqhb7'; // 金色被击打
+    // ============================================================
+
+    // ---------- 游戏状态 ----------
+    let score = 0;
+    let timeLeft = 30;
+    let isPlaying = false;
+    let timerId = null;
+    let spawnId = null;
+    let currentMoleIndex = -1;
+    let isGolden = false;
+    let isHitPending = false;
+
+    const grid = document.getElementById('grid');
+    const scoreSpan = document.getElementById('score');
+    const timerSpan = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // ---------- 创建 9 个洞 ----------
+    function buildGrid() {
+        grid.innerHTML = '';
+        for (let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.className = 'hole';
+            hole.dataset.index = i;
+            hole.addEventListener('click', () => handleClick(i));
+            grid.appendChild(hole);
+        }
+    }
+
+    // ---------- 清除所有地鼠 ----------
+    function clearMoles() {
+        document.querySelectorAll('.hole img').forEach(img => img.remove());
+        currentMoleIndex = -1;
+        isGolden = false;
+        isHitPending = false;
+    }
+
+    // ---------- 显示地鼠 ----------
+    function spawnMole() {
+        if (!isPlaying) return;
+
+        // 清除上一个地鼠
+        clearMoles();
+
+        // 随机选洞
+        const index = Math.floor(Math.random() * 9);
+        currentMoleIndex = index;
+        isGolden = Math.random() < 0.20; // 20% 概率金色
+
+        const hole = grid.children[index];
+        const img = document.createElement('img');
+        img.src = isGolden ? IMG_GOLDEN : IMG_NORMAL;
+        img.alt = '地鼠';
+        img.style.animation = 'pop 0.15s ease';
+        hole.appendChild(img);
+
+        // 自动消失（1.2 秒）
+        if (spawnId) clearTimeout(spawnId);
+        spawnId = setTimeout(() => {
+            if (isPlaying) {
+                clearMoles();
+                spawnMole(); // 递归生成下一个
+            }
+        }, 1200);
+    }
+
+    // ---------- 点击洞 ----------
+    function handleClick(index) {
+        if (!isPlaying) return;
+        if (index !== currentMoleIndex) return;
+        if (isHitPending) return;
+
+        const hole = grid.children[index];
+        const img = hole.querySelector('img');
+        if (!img) return;
+
+        isHitPending = true;
+
+        // 加分
+        const points = isGolden ? 3 : 1;
+        score += points;
+        scoreSpan.textContent = score;
+
+        // 切换到击中图片
+        img.src = isGolden ? IMG_GOLDEN_HIT : IMG_NORMAL_HIT;
+        img.style.animation = 'none'; // 重置动画
+
+        // 清除自动消失定时器
+        if (spawnId) clearTimeout(spawnId);
+
+        // 0.25 秒后移除地鼠，生成下一个
+        setTimeout(() => {
+            if (isPlaying) {
+                clearMoles();
+                isHitPending = false;
+                spawnMole();
+            } else {
+                clearMoles();
+                isHitPending = false;
+            }
+        }, 250);
+    }
+
+    // ---------- 倒计时 ----------
+    function startTimer() {
+        timeLeft = 30;
+        timerSpan.textContent = timeLeft;
+        timerId = setInterval(() => {
+            timeLeft--;
+            timerSpan.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000);
+    }
+
+    // ---------- 结束游戏 ----------
+    function endGame() {
+        isPlaying = false;
+        clearInterval(timerId);
+        clearTimeout(spawnId);
+        clearMoles();
+        startBtn.disabled = false;
+        alert(`⏰ 时间到！\n你的得分：${score} 分`);
+    }
+
+    // ---------- 开始游戏 ----------
+    function startGame() {
+        if (isPlaying) return;
+        resetGame();
+        isPlaying = true;
+        startBtn.disabled = true;
+        score = 0;
+        scoreSpan.textContent = '0';
+        startTimer();
+        // 延迟一点生成第一个地鼠
+        setTimeout(() => {
+            if (isPlaying) spawnMole();
+        }, 300);
+    }
+
+    // ---------- 重置 ----------
+    function resetGame() {
+        isPlaying = false;
+        clearInterval(timerId);
+        clearTimeout(spawnId);
+        clearMoles();
+        score = 0;
+        timeLeft = 30;
+        scoreSpan.textContent = '0';
+        timerSpan.textContent = '30';
+        startBtn.disabled = false;
+        isHitPending = false;
+    }
+
+    // ---------- 初始化 ----------
+    buildGrid();
+    resetBtn.addEventListener('click', resetGame);
+    startBtn.addEventListener('click', startGame);
+</script>
 </body>
 </html>
