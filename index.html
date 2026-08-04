@@ -165,19 +165,7 @@
     </a>
 </div>
 <div style="text-align: center; margin: 30px 0;">
-    <button onclick="logout()" style="
-        background: #ffcc00;
-        color: #333;
-        border: none;
-        padding: 10px 30px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        border: 1px solid #e6b800;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transition: 0.3s;
-    " onmouseover="this.style.background='#e6b800'" onmouseout="this.style.background='#ffcc00'">
+    <button onclick="sessionStorage.removeItem('site_authenticated'); sessionStorage.removeItem('site_username'); window.location.href='/login.html';" style="background: #ffcc00; color: #333; border: none; padding: 10px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; border: 1px solid #e6b800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
         LOG OUT
     </button>
 </div>
