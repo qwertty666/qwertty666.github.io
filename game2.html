@@ -12,7 +12,7 @@
 (function() {
     const AUTH_KEY = 'site_authenticated';
     if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
-        window.location.href = '/';
+        window.location.href = '/login.html';
     }
 })();
 </script>
