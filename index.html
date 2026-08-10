@@ -227,6 +227,240 @@
         game2
     </a>
 </div>
+    <!-- ===== 自动播放音乐控件 ===== -->
+<style>
+    /* 悬浮音乐控制器 - 适配 CDFZ 深色主题 */
+    #music-controller {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        background: rgba(26, 31, 58, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid #2a2f4a;
+        border-radius: 60px;
+        padding: 8px 16px 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+    #music-controller:hover {
+        border-color: #00d4ff;
+        box-shadow: 0 8px 40px rgba(0, 212, 255, 0.15);
+    }
+    #music-controller button {
+        background: none;
+        border: none;
+        color: #c0c0e0;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 4px 4px;
+        line-height: 1;
+        transition: 0.2s;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #music-controller button:hover {
+        color: #00d4ff;
+        background: rgba(0, 212, 255, 0.1);
+        transform: scale(1.05);
+    }
+    #music-controller input[type="range"] {
+        width: 70px;
+        height: 4px;
+        -webkit-appearance: none;
+        background: #3a3f5a;
+        border-radius: 4px;
+        outline: none;
+        transition: 0.2s;
+    }
+    #music-controller input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #00d4ff;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+    #music-controller input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #00d4ff;
+        cursor: pointer;
+        border: none;
+    }
+    #music-status {
+        color: #8888aa;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        min-width: 32px;
+        text-align: center;
+    }
+    /* 手机适配 */
+    @media (max-width: 600px) {
+        #music-controller {
+            bottom: 16px;
+            right: 16px;
+            padding: 6px 12px 6px 10px;
+            gap: 8px;
+            border-radius: 40px;
+        }
+        #music-controller button {
+            font-size: 20px;
+            width: 30px;
+            height: 30px;
+        }
+        #music-controller input[type="range"] {
+            width: 50px;
+        }
+        #music-status {
+            font-size: 10px;
+            min-width: 24px;
+        }
+    }
+</style>
+
+<div id="music-controller">
+    <!-- 播放/暂停按钮 -->
+    <button id="music-toggle" title="播放/暂停">▶</button>
+    <!-- 音量滑条 -->
+    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5">
+    <!-- 状态小字 -->
+    <span id="music-status">加载中</span>
+</div>
+
+<script>
+    (function() {
+        // ============================================================
+        // 1. 配置 —— ⚠️ 把下面的链接换成你自己的音乐文件！
+        // ============================================================
+        const MUSIC_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // 替换成你的音乐地址
+        
+        // ============================================================
+        // 2. 初始化音频
+        // ============================================================
+        const audio = new Audio(MUSIC_URL);
+        audio.loop = true;          // 循环播放
+        audio.volume = 0.5;         // 默认 50% 音量
+        
+        const toggleBtn = document.getElementById('music-toggle');
+        const volumeSlider = document.getElementById('music-volume');
+        const statusEl = document.getElementById('music-status');
+        
+        let isPlaying = false;
+        let userInteracted = false;  // 标记用户是否已经与页面交互过
+        
+        // ============================================================
+        // 3. 核心播放函数
+        // ============================================================
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                toggleBtn.textContent = '⏸';
+                statusEl.textContent = '播放中';
+                statusEl.style.color = '#00d4ff';
+            }).catch(err => {
+                // 自动播放被浏览器拦截，等待用户点击
+                console.log('⏳ 自动播放被拦截，等待用户交互...');
+                statusEl.textContent = '点击任意处';
+                statusEl.style.color = '#ffcc00';
+                // 绑定全局点击事件（只执行一次）
+                if (!userInteracted) {
+                    const resumeOnClick = function() {
+                        audio.play().then(() => {
+                            isPlaying = true;
+                            toggleBtn.textContent = '⏸';
+                            statusEl.textContent = '播放中';
+                            statusEl.style.color = '#00d4ff';
+                            userInteracted = true;
+                        }).catch(e => console.warn('播放失败:', e));
+                        document.removeEventListener('click', resumeOnClick);
+                        document.removeEventListener('touchstart', resumeOnClick);
+                    };
+                    document.addEventListener('click', resumeOnClick);
+                    document.addEventListener('touchstart', resumeOnClick);
+                    userInteracted = true; // 防止重复绑定
+                }
+            });
+        }
+        
+        // ============================================================
+        // 4. 加载完成后自动尝试播放
+        // ============================================================
+        window.addEventListener('load', function() {
+            statusEl.textContent = '加载中...';
+            // 先加载音频元数据
+            audio.load();
+            // 延迟 300ms 后尝试播放（给浏览器一点缓冲）
+            setTimeout(playMusic, 300);
+        });
+        
+        // ============================================================
+        // 5. 按钮事件：切换播放/暂停
+        // ============================================================
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();  // 防止触发全局点击
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                toggleBtn.textContent = '▶';
+                statusEl.textContent = '已暂停';
+                statusEl.style.color = '#8888aa';
+            } else {
+                playMusic();
+            }
+        });
+        
+        // ============================================================
+        // 6. 音量滑块控制
+        // ============================================================
+        volumeSlider.addEventListener('input', function() {
+            audio.volume = parseFloat(this.value);
+        });
+        
+        // ============================================================
+        // 7. 如果音频播放出错（比如文件404），提示用户
+        // ============================================================
+        audio.addEventListener('error', function() {
+            statusEl.textContent = '🎵 加载失败';
+            statusEl.style.color = '#ff6b6b';
+            toggleBtn.textContent = '▶';
+            console.error('❌ 音乐文件加载失败，请检查 MUSIC_URL 是否正确');
+        });
+        
+        // 音频加载完成后更新状态
+        audio.addEventListener('canplay', function() {
+            if (statusEl.textContent === '加载中...') {
+                statusEl.textContent = '准备就绪';
+            }
+        });
+        
+        // ============================================================
+        // 8. （可选）页面可见性变化时暂停，节省资源
+        // ============================================================
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && isPlaying) {
+                // 切到后台时暂停（如果你不喜欢这个行为，可以注释掉）
+                // audio.pause();
+                // isPlaying = false;
+                // toggleBtn.textContent = '▶';
+                // statusEl.textContent = '后台暂停';
+                // statusEl.style.color = '#8888aa';
+            }
+        });
+        
+    })();
+</script>
 <hr>
 
 <p>©2026 HELL OF CDFZ</p>
