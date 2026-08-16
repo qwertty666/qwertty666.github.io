@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <script>
-// 检查登录状态，未登录则跳转回首页
-(function() {
-    const AUTH_KEY = 'site_authenticated';
-    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
-        window.location.href = '/login.html';
-    }
-})();
-</script>
 <head>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <title>HELL OF CDFZ</title>
     <meta charset="utf-8">
+    <script>
+        // 检查登录状态，未登录则跳转回首页
+        (function() {
+            const AUTH_KEY = 'site_authenticated';
+            if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,6 +44,7 @@
             color: #333;
             border-left: 5px solid #ff6600;
             padding-left: 20px;
+            margin-bottom: 16px;
         }
         .form-group {
             margin-bottom: 20px;
@@ -62,6 +63,11 @@
             font-size: 16px;
             box-sizing: border-box;
         }
+        input:focus, textarea:focus {
+            border-color: #ff6600;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+        }
         button {
             background-color: #ff6600;
             color: white;
@@ -70,55 +76,154 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background 0.2s;
         }
         button:hover {
             background-color: #e05500;
         }
         hr {
             margin: 30px 0;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+        .easter-egg {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #999;
+        }
+        .easter-egg a {
+            color: #ff6600;
+            text-decoration: none;
+        }
+        .easter-egg a:hover {
+            text-decoration: underline;
+        }
+        #mainContent {
+            background: #fff;
+            padding: 20px 24px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .page-desc {
+            color: #555;
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-<!-- 导航栏 -->
-<div class="nav">
-    <a href="/">首页</a>
-    <a href="/about.html">关于</a>
-    <a href="/contact.html" style="color: white;">联系我们</a>
-    <a href="/publish.html" style="color: white;">近期发布</a>
-    <a href="/niutijin.html" style="color: white;">QYH专栏</a>
-    <a href="/mystery.html" style="color: white;">神秘图片</a>
-</div>
-
-<h1>联系我们</h1>
-<p>有任何问题、建议、合作或投稿意向，欢迎填写下方表单，我们会尽快回复您。</p>
-
-<form action="https://formsubmit.co/cmsdusdt@proton.me" method="POST">
-    <input type="hidden" name="_next" value="https://xyz.abrdns.com">
-    <input type="hidden" name="_captcha" value="false">
-    
-    <div class="form-group">
-        <label for="name">您的姓名</label>
-        <input type="text" id="name" name="name" required>
+    <!-- ===== 导航栏（静态保留） ===== -->
+    <div class="nav">
+        <a href="/">首页</a>
+        <a href="/about.html">关于</a>
+        <a href="/contact.html" style="color: white;">联系我们</a>
+        <a href="/publish.html" style="color: white;">近期发布</a>
+        <a href="/niutijin.html" style="color: white;">QYH专栏</a>
+        <a href="/mystery.html" style="color: white;">神秘图片</a>
     </div>
 
-    <div class="form-group">
-        <label for="email">您的邮箱</label>
-        <input type="email" id="email" name="email" required>
-    </div>
+    <!-- ===== 正文由 JS 动态渲染 ===== -->
+    <div id="mainContent"></div>
 
-    <div class="form-group">
-        <label for="message">留言内容</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
-    </div>
+    <!-- ========================================================== -->
+    <!-- ===== 引入外部数据文件 ===== -->
+    <!-- ========================================================== -->
+    <script src="contact-data.js"></script>
 
-    <button type="submit">发送留言</button>
-</form>
+    <!-- ========================================================== -->
+    <!-- ===== 渲染脚本 ===== -->
+    <!-- ========================================================== -->
+    <script>
+        (function renderContact() {
+            const data = window.contactData;
+            const container = document.getElementById('mainContent');
 
-<hr>
-<p>© 2026 HELL OF CDFZ</p>
-<p>（小彩蛋：https://res.cloudinary.com/dc6yzsom9/image/upload/BA2202FD-231F-44FB-A1C2-9A476E3C1700_ilialx)</p>
+            if (!data) {
+                container.innerHTML = '<p style="color:#ff6b6b;padding:20px;">⚠️ 数据加载失败，请检查 contact-data.js 是否存在。</p>';
+                return;
+            }
+
+            let html = '';
+
+            // ---- 1. 标题 ----
+            html += `<h1>${data.title || '联系我们'}</h1>`;
+
+            // ---- 2. 描述 ----
+            if (data.description) {
+                html += `<p class="page-desc">${data.description}</p>`;
+            }
+
+            // ---- 3. 表单 ----
+            const form = data.form || {};
+            html += `
+                <form action="${form.action || '#'}" method="${form.method || 'POST'}">
+                    <input type="hidden" name="_next" value="${form.redirectUrl || ''}">
+                    <input type="hidden" name="_captcha" value="${form.captcha ? 'true' : 'false'}">
+            `;
+
+            if (form.fields && Array.isArray(form.fields)) {
+                form.fields.forEach(field => {
+                    const requiredAttr = field.required ? 'required' : '';
+                    const placeholderAttr = field.placeholder ? `placeholder="${field.placeholder}"` : '';
+                    const idAttr = field.id ? `id="${field.id}"` : '';
+
+                    html += `<div class="form-group">`;
+                    html += `<label for="${field.id || ''}">${field.label || ''}</label>`;
+
+                    if (field.type === 'textarea') {
+                        html += `
+                            <textarea ${idAttr} name="${field.id || ''}" 
+                                rows="${field.rows || 5}" 
+                                ${placeholderAttr} 
+                                ${requiredAttr}></textarea>
+                        `;
+                    } else {
+                        html += `
+                            <input type="${field.type || 'text'}" 
+                                ${idAttr} 
+                                name="${field.id || ''}" 
+                                ${placeholderAttr} 
+                                ${requiredAttr}>
+                        `;
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            html += `
+                    <button type="submit">${form.submitButton || '发送留言'}</button>
+                </form>
+            `;
+
+            // ---- 4. 分割线 ----
+            html += `<hr>`;
+
+            // ---- 5. 页脚版权 ----
+            if (data.footer) {
+                html += `<p class="footer">${data.footer}</p>`;
+            }
+
+            // ---- 6. 彩蛋链接 ----
+            if (data.easterEgg && data.easterEgg.url) {
+                html += `
+                    <div class="easter-egg">
+                        <a href="${data.easterEgg.url}" target="_blank">${data.easterEgg.text || '🎉 彩蛋'}</a>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        })();
+    </script>
 
 </body>
 </html>
