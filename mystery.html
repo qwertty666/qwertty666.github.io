@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <script>
-// 检查登录状态，未登录则跳转回首页
-(function() {
-    const AUTH_KEY = 'site_authenticated';
-    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
-        window.location.href = '/login.html';
-    }
-})();
-</script>
 <head>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <title>HELL OF CDFZ</title>
     <meta charset="utf-8">
+    <script>
+        // 检查登录状态，未登录则跳转回首页
+        (function() {
+            const AUTH_KEY = 'site_authenticated';
+            if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,7 +72,7 @@
             height: auto;
             display: block;
         }
-        .card p {
+        .card .caption {
             padding: 15px;
             color: #ddd;
             text-align: center;
@@ -96,86 +96,73 @@
 </head>
 <body>
 
-<!-- 导航栏 -->
-<div class="nav">
-    <a href="/">首页</a>
-    <a href="/about.html" style="color: white;">关于</a>
-    <a href="/contact.html" style="color: white;">联系我们</a>
-    <a href="/publish.html" style="color: white;">近期发布</a>
-    <a href="/niutijin.html" style="color: white;">QYH专栏</a>
-    <a href="/mystery.html" style="color: white;">神秘图片</a>
-</div>
+    <!-- ===== 导航栏（静态保留） ===== -->
+    <div class="nav">
+        <a href="/">首页</a>
+        <a href="/about.html" style="color: white;">关于</a>
+        <a href="/contact.html" style="color: white;">联系我们</a>
+        <a href="/publish.html" style="color: white;">近期发布</a>
+        <a href="/niutijin.html" style="color: white;">QYH专栏</a>
+        <a href="/mystery.html" style="color: white;">神秘图片</a>
+    </div>
 
-<h1>神秘图片</h1>
-<p class="subtitle">温馨提示：境外托管，请耐心等待图片加载。最多2分钟。建议将网址复制到浏览器打开。如图片长时间未加载出，请刷新页面。</p>
+    <!-- ===== 正文由 JS 动态渲染 ===== -->
+    <div id="mainContent"></div>
 
-    <div class="gallery">
-        <!-- 卡片 1 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1063_esqw8p" alt="图片1" loading="lazy">
-            <div class="caption">牢班睡觉中………</div>
-        </div>
+    <!-- ===== 外部数据文件 ===== -->
+    <script src="mystery-data.js"></script>
 
-        <!-- 卡片 2 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1059_zcy96m" alt="图片2" loading="lazy">
-            <div class="caption">沉思中的菲巴睿</div>
-        </div>
+    <!-- ===== 渲染脚本 ===== -->
+    <script>
+        (function renderMystery() {
+            const data = window.mysteryData;
+            const container = document.getElementById('mainContent');
 
-        <!-- 卡片 3 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1068_rs0lvd" alt="图片3" loading="lazy">
-            <div class="caption">恶作剧。</div>
-        </div>
+            if (!data) {
+                container.innerHTML = '<p style="color:#ff6b6b;padding:20px;">⚠️ 数据加载失败，请检查 mystery-data.js 是否存在。</p>';
+                return;
+            }
 
-        <!-- 卡片 4 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0128_akpzm3" alt="图片4" loading="lazy">
-            <div class="caption">XXL扣bs</div>
-        </div>
+            let html = '';
 
-        <!-- 卡片 5 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1070_apxfgb" alt="图片5" loading="lazy">
-            <div class="caption">川普大事迹</div>
-        </div>
+            // ---- 标题 ----
+            html += `<h1>${data.title || '神秘图片'}</h1>`;
 
-        <!-- 卡片 6 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/47AD5F440B5E9A2C8585E4B4AE09DD62_asn4s0" alt="图片6" loading="lazy">
-            <div class="caption">班长依旧睡觉。</div>
-        </div>
+            // ---- 副标题 ----
+            if (data.subtitle) {
+                html += `<p class="subtitle">${data.subtitle}</p>`;
+            }
 
-         <!-- 卡片 7 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1071_hcibbd" alt="图片7" loading="lazy">
-            <div class="caption">王茂钢的怪物鸡巴。</div>
-        </div>
-       <!-- 卡片 8 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0615_o2oxpm" alt="图片7" loading="lazy">
-            <div class="caption">肛大头。</div>
-        </div>
-      <!-- 卡片 9 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0767_w82bng" alt="图片7" loading="lazy">
-            <div class="caption">肛之恋。</div>
-        </div>
-      <!-- 卡片 10 -->
-        <div class="card">
-              <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0334_m5quxs" alt="图片8" loading="lazy">
-            <div class="caption">肛毛的夜店荣耀。</div>
-        </div>
-      
-</div>
+            // ---- 图片卡片列表 ----
+            if (data.images && Array.isArray(data.images)) {
+                html += `<div class="gallery">`;
+                data.images.forEach(item => {
+                    html += `
+                        <div class="card">
+                            <img src="${item.src}" alt="${item.caption || '神秘图片'}" loading="lazy">
+                            <div class="caption">${item.caption || ''}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else {
+                html += `<p style="color:#aaa;text-align:center;">暂无图片，请稍后查看。</p>`;
+            }
 
-<hr>
+            // ---- 分割线 ----
+            html += `<hr>`;
 
-<a href="/" class="back-link">← 返回首页</a>
+            // ---- 返回首页链接 ----
+            html += `<a href="/" class="back-link">← 返回首页</a>`;
 
-<footer>
-    <p>© 2026 HELL OF CDFZ</p>
-</footer>
+            // ---- 页脚 ----
+            if (data.footer) {
+                html += `<footer><p>${data.footer}</p></footer>`;
+            }
+
+            container.innerHTML = html;
+        })();
+    </script>
 
 </body>
 </html>
