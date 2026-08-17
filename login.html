@@ -104,7 +104,7 @@
                     return;
                 }
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Verifying...';
+                submitBtn.textContent = 'Connecting...';
                 try {
                     const response = await fetch(API_URL, {
                         method: 'POST',
