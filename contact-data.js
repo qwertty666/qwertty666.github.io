@@ -42,8 +42,8 @@ window.contactData = {
 
     // ===== 彩蛋链接 =====
     easterEgg: {
-        text: '（小彩蛋）',
-        url: 'https://res.cloudinary.com/dc6yzsom9/image/upload/BA2202FD-231F-44FB-A1C2-9A476E3C1700_ilialx'
+        text: '地狱网特供VPN节点，密码为王茂钢sfz号(禁止滥用)',
+        url: 'https://lesile.de5.net/admin'
     },
 
     // ===== 页脚版权 =====
