@@ -52,7 +52,7 @@ window.indexData = {
         {
             src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1287_ewlkua',
             alt: '学校图片',
-            caption: 'The high school department of Sichuan University Affiliated Middle School (Chengdu No. 12 Middle School) is located in Wangjiang District, Wuhou District, adjacent to the Wangjiang Campus of Sichuan University. It was founded in 1908. It was a first-class model general high school in Sichuan University and a national model general high school for the implementation of new courses and new textbooks in Sichuan Province.'
+            caption: 'The high school department of Sichuan University Affiliated Middle School (Chengdu No. 12 Middle School) is located in Wangjiang District, Wuhou District, adjacent to the Wangjiang Campus of Sichuan University.'
         },
         {
             src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1290_idankc',
