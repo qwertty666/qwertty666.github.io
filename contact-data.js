@@ -42,7 +42,7 @@ window.contactData = {
 
     // ===== 彩蛋链接 =====
     easterEgg: {
-        text: '地狱网特供VPN节点，密码为王茂钢sfz号(禁止滥用)',
+        text: '点击！！！跳转至地狱网特供VPN节点，密码为王茂钢sfz号(禁止滥用)',
         url: 'https://lesile.de5.net/admin'
     },
 
