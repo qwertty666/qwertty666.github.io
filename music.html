@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>花海 · 周杰伦</title>
+    <style>
+        /* ----- 全局重置 & 全屏背景 ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* 防止滚动条破坏沉浸感 */
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        /* ----- 背景层（用户可替换图片链接） ----- */
+        .bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1295_m9vl1t') no-repeat center center / cover;
+            /* 👆 把上面双引号里的链接换成你自己的图片地址 */
+            z-index: 0;
+            filter: brightness(0.75) saturate(1.1);
+            /* 微调亮度/饱和度，让文字更清晰 */
+            transition: filter 0.6s ease;
+        }
+
+        /* 点击播放后背景微微变暗，增强反馈 */
+        .bg.playing {
+            filter: brightness(0.6) saturate(1.2);
+        }
+
+        /* ----- 遮罩层（让文字更清晰） ----- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.35);
+            /* 深色半透明，可调节透明度 */
+            z-index: 1;
+            pointer-events: none;
+            /* 让点击穿透到文字层 */
+        }
+
+        /* ----- 点击区域（居中 + 点击播放） ----- */
+        .click-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            /* 手型光标，暗示可点击 */
+            user-select: none;
+            /* 防止文字被选中 */
+            padding: 30px;
+            text-align: center;
+        }
+
+        /* ----- 主文字样式（优雅、大气） ----- */
+        .main-text {
+            font-size: clamp(2.8rem, 12vw, 6.5rem);
+            font-weight: 700;
+            color: #fff;
+            text-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.7),
+                0 0 60px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.5);
+            letter-spacing: 6px;
+            line-height: 1.3;
+            transition: transform 0.25s ease, text-shadow 0.3s ease;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        /* 悬停/点击反馈 */
+        .click-area:hover .main-text {
+            transform: scale(1.04);
+            text-shadow:
+                0 6px 30px rgba(0, 0, 0, 0.8),
+                0 0 80px rgba(255, 215, 0, 0.25);
+        }
+
+        .click-area:active .main-text {
+            transform: scale(0.96);
+        }
+
+        /* ----- 副标题 / 小提示（可选） ----- */
+        .sub-hint {
+            margin-top: 24px;
+            font-size: clamp(0.9rem, 2vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+            letter-spacing: 4px;
+            font-weight: 300;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 18px;
+            transition: opacity 0.4s ease;
+        }
+
+        /* 播放后副标题淡出 */
+        .click-area.playing .sub-hint {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        /* 播放状态指示小圆点（呼吸灯） */
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffd966;
+            margin-right: 10px;
+            vertical-align: middle;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .click-area.playing .status-dot {
+            background: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+            animation: breathe 1.2s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+
+        /* ----- 右下角版权（小字，不影响点击） ----- */
+        .footer-credit {
+            position: fixed;
+            bottom: 20px;
+            right: 28px;
+            z-index: 3;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+            /* 让点击穿透，不会干扰主按钮 */
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ----- 响应式微调 ----- */
+        @media (max-width: 600px) {
+            .main-text {
+                letter-spacing: 3px;
+            }
+            .sub-hint {
+                margin-top: 16px;
+                padding-top: 14px;
+                font-size: 0.8rem;
+            }
+            .footer-credit {
+                bottom: 14px;
+                right: 18px;
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 背景图片 ===== -->
+    <div class="bg" id="bgLayer"></div>
+
+    <!-- ===== 半透明遮罩 ===== -->
+    <div class="overlay"></div>
+
+    <!-- ===== 点击区域（整屏可点） ===== -->
+    <div class="click-area" id="clickArea">
+
+        <!-- 主文字 -->
+        <div class="main-text">
+            <span class="status-dot" id="statusDot"></span>
+            花海
+        </div>
+
+        <!-- 副标题 / 操作提示 -->
+        <div class="sub-hint" id="subHint">
+            ✦ 点击播放 · 周杰伦 ✦
+        </div>
+
+    </div>
+
+    <!-- ===== 右下角小字 ===== -->
+    <div class="footer-credit">© 2026 · HELL OF CDFZ</div>
+
+
+    <!-- ============================================================ -->
+    <!-- ===== 音乐播放控制 ===== -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ----------------------------------------------------------
+            // 1. 配置区 —— ⚠️ 把下面两处换成你自己的资源！
+            // ----------------------------------------------------------
+            const MUSIC_URL = 'https://res.cloudinary.com/dc6yzsom9/video/upload/f_mp3/情凭谁来定错对-谭咏麟_knkb6s.flac';
+            // 👆 替换成你的音乐文件地址（支持 mp3 / m4a / flac / ogg 等）
+
+            // 你也可以同时更换背景图（在 CSS 的 .bg 中修改，或者直接替换下面的变量）
+            // 但背景图已经在 CSS 里了，为了统一，这里不再重复定义。
+
+            // ----------------------------------------------------------
+            // 2. DOM 引用
+            // ----------------------------------------------------------
+            const clickArea = document.getElementById('clickArea');
+            const bgLayer = document.getElementById('bgLayer');
+            const subHint = document.getElementById('subHint');
+            const dot = document.getElementById('statusDot');
+
+            // ----------------------------------------------------------
+            // 3. 创建音频实例
+            // ----------------------------------------------------------
+            const audio = new Audio(MUSIC_URL);
+            audio.loop = true; // 循环播放
+            audio.volume = 0.6; // 默认音量 60%
+
+            let isPlaying = false;
+
+            // ----------------------------------------------------------
+            // 4. 播放 / 暂停 切换
+            // ----------------------------------------------------------
+            function togglePlay(e) {
+                e.stopPropagation(); // 防止冒泡（虽然没多层嵌套，但养成好习惯）
+
+                if (isPlaying) {
+                    // ---- 暂停 ----
+                    audio.pause();
+                    isPlaying = false;
+                    clickArea.classList.remove('playing');
+                    bgLayer.classList.remove('playing');
+                    subHint.textContent = '✦ 已暂停 · 点击继续 ✦';
+                    dot.style.background = '#ffd966';
+                    dot.style.animation = 'none';
+                    // 重置呼吸灯
+                    void dot.offsetWidth; // 强制回流以重启动画
+                    dot.style.animation = '';
+                } else {
+                    // ---- 播放 ----
+                    // 如果音频已经结束或未加载，重新加载
+                    if (audio.ended) {
+                        audio.currentTime = 0;
+                    }
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        clickArea.classList.add('playing');
+                        bgLayer.classList.add('playing');
+                        subHint.textContent = '♫ 播放中 ... 点击暂停';
+                        dot.style.background = '#4caf50';
+                        // 呼吸灯动画由 CSS 控制，加一个类触发
+                        dot.style.animation = 'breathe 1.2s ease-in-out infinite';
+                    }).catch((err) => {
+                        // 自动播放被浏览器拦截 -> 显示提示
+                        console.warn('播放被拦截:', err);
+                        subHint.textContent = '⚠️ 请点击页面任意位置以允许播放';
+                        // 绑定一次全局点击来恢复
+                        const resumeOnce = function() {
+                            audio.play().then(() => {
+                                isPlaying = true;
+                                clickArea.classList.add('playing');
+                                bgLayer.classList.add('playing');
+                                subHint.textContent = '♫ 播放中 ... 点击暂停';
+                                dot.style.background = '#4caf50';
+                                dot.style.animation = 'breathe 1.2s ease-in-out infinite';
+                            }).catch(() => {});
+                            document.removeEventListener('click', resumeOnce);
+                            document.removeEventListener('touchstart', resumeOnce);
+                        };
+                        document.addEventListener('click', resumeOnce);
+                        document.addEventListener('touchstart', resumeOnce);
+                    });
+                }
+            }
+
+            // ----------------------------------------------------------
+            // 5. 绑定点击事件（整屏点击触发）
+            // ----------------------------------------------------------
+            clickArea.addEventListener('click', togglePlay);
+
+            // ----------------------------------------------------------
+            // 6. （可选）键盘空格键控制
+            // ----------------------------------------------------------
+            document.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Space') {
+                    e.preventDefault(); // 防止页面滚动
+                    togglePlay(e);
+                }
+            });
+
+            // ----------------------------------------------------------
+            // 7. 页面加载后自动播放（无声音乐法规限制，尝试一次）
+            // ----------------------------------------------------------
+            window.addEventListener('load', function() {
+                // 静默尝试自动播放，如果被拦截，用户点击时会触发上面的逻辑
+                audio.load();
+                // 延迟一点点尝试播放
+                setTimeout(() => {
+                    audio.play().then(() => {
+                        // 自动播放成功
+                        isPlaying = true;
+                        clickArea.classList.add('playing');
+                        bgLayer.classList.add('playing');
+                        subHint.textContent = '♫ 播放中 ... 点击暂停';
+                        dot.style.background = '#4caf50';
+                        dot.style.animation = 'breathe 1.2s ease-in-out infinite';
+                    }).catch(() => {
+                        // 自动播放被拦截，显示提示，等待用户点击
+                        subHint.textContent = '✦ 点击播放 · 周杰伦 ✦';
+                        console.log('⏳ 等待用户交互后播放');
+                    });
+                }, 400);
+            });
+
+            // 如果音频加载出错，提示用户
+            audio.addEventListener('error', function() {
+                subHint.textContent = '❌ 音乐加载失败，请检查链接';
+                console.error('❌ 音乐文件加载失败，请确认 MUSIC_URL 是否正确');
+            });
+
+            // 播放结束后自动重新播放（因为 loop=true，一般不会触发 ended）
+            audio.addEventListener('ended', function() {
+                // 如果 loop 失效，手动重播
+                if (isPlaying) {
+                    audio.currentTime = 0;
+                    audio.play().catch(() => {});
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
