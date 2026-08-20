@@ -7,6 +7,15 @@
     <link rel="manifest" href="/site.webmanifest"> 
     
     <meta charset="UTF-8" />
+    <script>
+        // 检查登录状态，未登录则跳转回首页
+        (function() {
+            const AUTH_KEY = 'site_authenticated';
+            if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HELL OF CDFZ</title>
     <style>
