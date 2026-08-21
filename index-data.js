@@ -36,14 +36,6 @@ window.indexData = {
         alt: '横幅图片'
     },
 
-    // ============================================================
-    // 4. 三张小图（并排）
-    // ============================================================
-    thumbnails: [
-        { src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1317_kupb5p', caption: '图1' },
-        { src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1318_omrnwg', caption: '图2' },
-        { src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1319_gf19go', caption: '图3' }
-    ],
 
     // ============================================================
     // 5. 正文插图（大图 + 说明文字）
@@ -52,22 +44,14 @@ window.indexData = {
         {
             src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1546_spja5m',
             alt: '学校图片',
-            caption: 'The high school department of Sichuan University Affiliated Middle School (Chengdu No. 12 Middle School) is located in Wangjiang District, Wuhou District, adjacent to the Wangjiang Campus of Sichuan University.'
+            caption: '海面晚风配白葡萄酒，是独属于游艇的松弛黄昏。'
         },
         {
             src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1545_bkykyj',
             alt: '校长致敬',
-            caption: '川大附中学子欣欣向荣!'
+            caption: '斑斓灯火交织长街，每一束霓虹都写满都市浪漫。'
         }
     ],
-
-    // ============================================================
-    // 6. iOS 教学图片（可选，如无图片可删或留空）
-    // ============================================================
-    iosTutorial: {
-        src: '',  // 如果有图请填地址，没有就留空
-        alt: 'iOS 添加到主屏幕教程'
-    },
 
     // ============================================================
     // 7. 歌词（放在最后）
