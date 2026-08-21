@@ -492,35 +492,6 @@
             }
 
             // ============================================================
-            // 4. 三张小图
-            // ============================================================
-            if (data.thumbnails && Array.isArray(data.thumbnails) && data.thumbnails.length > 0) {
-                html += `<div class="thumb-grid">`;
-                data.thumbnails.forEach(item => {
-                    html += `
-                        <div class="thumb-item">
-                            <img src="${item.src}" alt="${item.caption || '图片'}" loading="lazy">
-                            <p>${item.caption || ''}</p>
-                        </div>
-                    `;
-                });
-                html += `</div><hr>`;
-            }
-
-
-             // ============================================================
-            // 6. iOS 教学图（如果有）
-            // ============================================================
-            if (data.iosTutorial && data.iosTutorial.src) {
-                html += `
-                    <div class="img-wrapper">
-                        <img src="${data.iosTutorial.src}" alt="${data.iosTutorial.alt || 'iOS教程'}" loading="lazy">
-                    </div>
-                    <hr>
-                `;
-            }
-
-            // ============================================================
             // 5. 正文插图（大图 + 说明文字）
             // ============================================================
             if (data.contentImages && Array.isArray(data.contentImages)) {
