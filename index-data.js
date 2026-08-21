@@ -32,7 +32,7 @@ window.indexData = {
     // 3. 横幅大图（公告下方）
     // ============================================================
     banner: {
-        src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/9204017F-8121-43F3-80E8-9ED36704B010_lhpgz7',
+        src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1543_a7wwmz',
         alt: '横幅图片'
     },
 
@@ -50,14 +50,14 @@ window.indexData = {
     // ============================================================
     contentImages: [
         {
-            src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1287_ewlkua',
+            src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1546_spja5m',
             alt: '学校图片',
             caption: 'The high school department of Sichuan University Affiliated Middle School (Chengdu No. 12 Middle School) is located in Wangjiang District, Wuhou District, adjacent to the Wangjiang Campus of Sichuan University.'
         },
         {
-            src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1290_idankc',
+            src: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_1545_bkykyj',
             alt: '校长致敬',
-            caption: 'Salute to our respected principal!'
+            caption: '川大附中学子欣欣向荣!'
         }
     ],
 
