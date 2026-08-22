@@ -529,6 +529,250 @@
         一键访问
     </a>
 </div>
+
+
+
+        
+        <!-- ===== 评论区容器 ===== -->
+<div id="comment-app">
+    <h3>💬 评论区</h3>
+    <div id="comment-list">
+        <!-- 动态渲染 -->
+    </div>
+    <div id="load-more-container">
+        <button id="load-more-btn" style="display:none;">查看更多评论</button>
+    </div>
+
+    <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+    <!-- 提交表单 -->
+    <form id="comment-form">
+        <input type="text" id="nickname" placeholder="昵称（选填，默认：热心的川大附中学子）" maxlength="20">
+        <textarea id="content" placeholder="写点什么..." required maxlength="500"></textarea>
+        <button type="submit">发布评论</button>
+    </form>
+    <div id="form-message" style="color: #ffcc00; margin-top: 8px;"></div>
+</div>
+
+<style>
+#comment-app {
+    margin: 40px 0;
+    padding: 20px 24px;
+    background: rgba(10, 14, 39, 0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+#comment-list .comment-item {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 12px 0;
+}
+.comment-item:last-child {
+    border-bottom: none;
+}
+.comment-item .meta {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.comment-item .nickname {
+    color: #00d4ff;
+    font-weight: bold;
+}
+.comment-item .time {
+    color: #8888aa;
+    font-size: 0.8rem;
+}
+.comment-item .content {
+    margin-top: 4px;
+    color: #e0e0e0;
+    word-break: break-word;
+}
+#load-more-container {
+    text-align: center;
+    margin: 12px 0;
+}
+#load-more-btn {
+    background: transparent;
+    border: 1px solid #2a2f4a;
+    color: #c0c0e0;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#load-more-btn:hover {
+    border-color: #00d4ff;
+    color: #00d4ff;
+}
+
+#comment-form input,
+#comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: 1px solid #2a2f4a;
+    background: rgba(255,255,255,0.05);
+    color: #e0e0e0;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+#comment-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+#comment-form button {
+    background: #00d4ff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #0a0e27;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+#comment-form button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0,212,255,0.3);
+}
+#form-message {
+    min-height: 20px;
+}
+</style>
+
+<script>
+    // ===== 评论区 JavaScript =====
+    (function() {
+        const API_BASE = 'https://comment-api.你的用户名.workers.dev'; // 替换为你的 Worker 域名
+
+        const listEl = document.getElementById('comment-list');
+        const loadBtn = document.getElementById('load-more-btn');
+        const form = document.getElementById('comment-form');
+        const nicknameInput = document.getElementById('nickname');
+        const contentInput = document.getElementById('content');
+        const msgEl = document.getElementById('form-message');
+
+        let currentPage = 0;
+        let hasMore = true;
+        let isLoading = false;
+
+        // 格式化时间
+        function formatTime(iso) {
+            const d = new Date(iso);
+            return d.toLocaleString('zh-CN', { hour12: false });
+        }
+
+        // 加载评论（追加或替换）
+        async function loadComments(page, append = false) {
+            if (isLoading) return;
+            isLoading = true;
+            loadBtn.textContent = '加载中...';
+            try {
+                const res = await fetch(`${API_BASE}/api/comments?page=${page}`);
+                if (!res.ok) throw new Error('加载失败');
+                const data = await res.json();
+
+                if (!append) {
+                    listEl.innerHTML = '';
+                }
+
+                if (data.comments.length === 0 && page === 0) {
+                    listEl.innerHTML = '<p style="color:#8888aa; text-align:center; padding:20px 0;">暂无评论，来说两句吧~</p>';
+                    hasMore = false;
+                    loadBtn.style.display = 'none';
+                    return;
+                }
+
+                data.comments.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'comment-item';
+                    item.innerHTML = `
+                        <div class="meta">
+                            <span class="nickname">${escapeHtml(c.nickname)}</span>
+                            <span class="time">${formatTime(c.created_at)}</span>
+                        </div>
+                        <div class="content">${escapeHtml(c.content)}</div>
+                    `;
+                    listEl.appendChild(item);
+                });
+
+                hasMore = data.hasMore;
+                currentPage = page;
+                if (hasMore) {
+                    loadBtn.style.display = 'inline-block';
+                    loadBtn.textContent = '查看更多评论';
+                } else {
+                    loadBtn.style.display = 'none';
+                }
+            } catch (e) {
+                console.error(e);
+                msgEl.textContent = '评论加载失败，请刷新重试';
+            } finally {
+                isLoading = false;
+                if (hasMore) loadBtn.textContent = '查看更多评论';
+            }
+        }
+
+        // 简易防 XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 提交评论
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nickname = nicknameInput.value.trim() || '热心的川大附中学子';
+            const content = contentInput.value.trim();
+            if (!content) {
+                msgEl.textContent = '内容不能为空';
+                return;
+            }
+            if (content.length > 500) {
+                msgEl.textContent = '内容超过500字符限制';
+                return;
+            }
+
+            msgEl.textContent = '提交中...';
+            try {
+                const res = await fetch(`${API_BASE}/api/comments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nickname, content }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '提交失败');
+                }
+                msgEl.textContent = '✅ 评论发布成功！';
+                form.reset();
+                // 重新加载第一页（最新评论在最前面）
+                currentPage = 0;
+                await loadComments(0, false);
+            } catch (e) {
+                msgEl.textContent = '❌ ' + e.message;
+            }
+        });
+
+        // 加载更多
+        loadBtn.addEventListener('click', function() {
+            if (!isLoading && hasMore) {
+                loadComments(currentPage + 1, true);
+            }
+        });
+
+        // 初始加载第一页
+        loadComments(0, false);
+    })();
+</script>
+
+
+        
       <hr style="border-color: rgba(255,255,255,0.1); margin: 40px 0;">    
         <p>©2026 HELL OF CDFZ</p>
     </div>
