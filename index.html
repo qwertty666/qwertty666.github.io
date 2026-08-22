@@ -660,11 +660,13 @@
         let hasMore = true;
         let isLoading = false;
 
-        // 格式化时间
-        function formatTime(iso) {
-            const d = new Date(iso);
-            return d.toLocaleString('zh-CN', { hour12: false });
-        }
+        // 格式化时间（修正时区差）
+function formatTime(iso) {
+    // 后端返回的是 UTC 时间 "YYYY-MM-DD HH:MM:SS"
+    // 替换空格为 T 并加上 Z，强制作为 UTC 时间解析
+    const d = new Date(iso.replace(' ', 'T') + 'Z');
+    return d.toLocaleString('zh-CN', { hour12: false });
+}
 
         // 加载评论（追加或替换）
         async function loadComments(page, append = false) {
