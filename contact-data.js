@@ -40,12 +40,6 @@ window.contactData = {
         submitButton: '发送留言'
     },
 
-    // ===== 彩蛋链接 =====
-    easterEgg: {
-        text: '小彩蛋',
-        url: 'https://res.cloudinary.com/dc6yzsom9/image/upload/BA2202FD-231F-44FB-A1C2-9A476E3C1700_ilialx'
-    },
-
     // ===== 页脚版权 =====
     footer: '© 2026 HELL OF CDFZ'
 };
