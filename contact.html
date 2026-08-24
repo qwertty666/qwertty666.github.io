@@ -211,16 +211,6 @@
             if (data.footer) {
                 html += `<p class="footer">${data.footer}</p>`;
             }
-
-            // ---- 6. 彩蛋链接 ----
-            if (data.easterEgg && data.easterEgg.url) {
-                html += `
-                    <div class="easter-egg">
-                        <a href="${data.easterEgg.url}" target="_blank">${data.easterEgg.text || '🎉 彩蛋'}</a>
-                    </div>
-                `;
-            }
-
             container.innerHTML = html;
         })();
     </script>
