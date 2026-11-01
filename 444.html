@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html>
+ <script>
+// 检查登录状态，未登录则跳转回首页
+(function() {
+    const AUTH_KEY = 'site_authenticated';
+    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+        window.location.href = '/';
+    }
+})();
+</script>
+<head>
+ <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+    <title>HELL OF CDFZ</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .nav {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 8px 16px;
+        }
+        .nav a:hover {
+            background-color: #555;
+            border-radius: 5px;
+        }
+        .article-title {
+            font-size: 28px;
+            color: #333;
+            border-left: 5px solid #ff6600;
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        .article-meta {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .article-content {
+            line-height: 1.8;
+            color: #333;
+            font-size: 16px;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .article-content img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #ff6600;
+            text-decoration: none;
+        }
+        hr {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="nav">
+    <a href="/">首页</a>
+    <a href="/about.html">关于</a>
+    <a href="/publish.html" style="color: white;">近期发布</a>
+    <a href="/contact.html">联系我们</a>
+    <a href="/niutijin.html" style="color: white;">QYH专栏</a>
+    <a href="/mystery.html" style="color: white;">神秘图片</a>
+</div>
+
+<h1 class="article-title">东鹏控股有限公司近日股价走势</h1>
+
+<div class="article-meta">
+    发布时间：2026年11月1日 | 来源：上证所信息网
+</div>
+
+<div class="article-content">
+    <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/"  alt="配图1">
+<img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/"  alt="配图2">
+<img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/"  alt="配图3">
+ <img src="https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/"  alt="配图4">
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+
+<hr>
+
+<a href="/publish.html" class="back-link">← 返回近期发布</a>
+
+<p style="margin-top: 40px;">© 2026 HELL OF CDFZ</p>
+
+</body>
+</html>
 
