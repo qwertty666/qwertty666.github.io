@@ -4,6 +4,51 @@ window.publishData = [
     // ===== 视频类 =====
     {
         type: 'video',
+        title: ' 《one more gun 》',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/CF4C298E7462E539AE6A6A33022DF595_my21v9',
+        description: '📝 禁止下载并传播！',
+        meta: '视频时长：249秒'
+    },
+    {
+        type: 'video',
+        title: ' 《王茂刚之恋》，来自友站——川大附中天堂网。',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/3BE9B0E04F9D9DC4195DD7B7D96CD930_mc4srs',
+        description: '📝 禁止下载并传播！',
+        meta: '视频时长：151秒'
+    },
+    {
+        type: 'video',
+        title: '北京，真正的中华帝都。',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/v14025g50000dbddec7og65pau5rfaa0_inhst6',
+        description: '北京，展现出中国新的一面。为中华之崛起而读书！',
+        meta: '视频时长：约10秒'
+    },
+    {
+        type: 'video',
+        title: '姆巴佩涉华不当言论。',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/v15025gf0000dbg4panog65uq02g1f60_pkbmp3',
+        description: '📝 禁止下载并传播！',
+        meta: '视频时长：约8秒'
+    },
+     {
+        type: 'video',
+        title: '日式肥妹Yakutan',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/IMG_0780_omeqff',
+        description: '📝 禁止下载并传播！',
+        meta: '视频时长：约7秒'
+    },
+    {
+        type: 'video',
         title: '🎬 王茂钢虐待小儿子。',
         date: '2026',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
