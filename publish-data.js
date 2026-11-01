@@ -1,10 +1,24 @@
 // publish-data.js
 // 近期发布 - 全部数据列表
 window.publishData = [
+     {
+        type: 'article',
+        title: '东鹏控股周K详情',
+        date: '2026',
+        link: '/444.html',
+        summary: '详情……'
+    },
+     {
+        type: 'article',
+        title: '川大附中五楼厕所同性恋不雅事件曝光。',
+        date: '2026-10-13 20:44',
+        link: '/333.html',
+        summary: '震惊！川大附中五楼厕所惊现Gay佬搞基，视频炸裂……'
+    },
     // ===== 视频类 =====
     {
         type: 'video',
-        title: ' 《one more gun 》',
+        title: ' 《one more gun》',
         date: '2026',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
         src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/CF4C298E7462E539AE6A6A33022DF595_my21v9',
