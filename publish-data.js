@@ -90,7 +90,7 @@ window.publishData = [
     },
     {
         type: 'video',
-        title: '🎬 傻B赛文',
+        title: '🎬 傻B玩意儿',
         date: '20260717',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
         src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/copy_F77D8B89-ECE2-44DD-B594-04BE6F4E42B5_dwo2lm',
