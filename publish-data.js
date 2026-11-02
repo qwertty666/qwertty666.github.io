@@ -57,7 +57,7 @@ window.publishData = [
         title: '日式肥妹Yakutan',
         date: '2026',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/IMG_0780_omeqff',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/A101C381-5E65-4FAD-9167-E110A710CA6F_j6aclv',
         description: '📝 禁止下载并传播！',
         meta: '视频时长：约7秒'
     },
@@ -66,7 +66,7 @@ window.publishData = [
         title: '🎬 王茂钢虐待小儿子。',
         date: '2026',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/copy_7987F1BA-55E7-4A19-8E63-41B2BD19FAD9_sjc28c',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/C1801A90-B7E8-476E-850C-CD6A1E31CA73_pvayon',
         description: '📝 禁止下载并传播！',
         meta: '📍 拍摄时间：3335<br>⏱️ 视频时长：约15秒'
     },
