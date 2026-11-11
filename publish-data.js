@@ -252,7 +252,7 @@ window.publishData = [
     },
     {
         type: 'video',
-        title: '🎬 肛毛上课与同学们积极互动。（视频拍摄不易，请勿传播）',
+        title: '🎬 肛毛上课与同学们积极互动。（视频找不到了，加载不出来，先别看这个。）',
         date: '2026-05-07',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
         src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/20260507184606_wejioi',
