@@ -75,7 +75,7 @@ window.publishData = [
         title: '🎬 王子为耍手表。',
         date: '2026 7 19',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/IMG_1118_f3pcw3',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/13173D00-4681-4572-8E2E-1AF14371B908_evjulp',
         description: '📝 禁止下载并传播！',
         meta: '📍 拍摄时间：3335<br>⏱️ 视频时长：约5秒'
     },
@@ -84,16 +84,16 @@ window.publishData = [
         title: '🎬 年轻的良娟。',
         date: 'unknown',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/2d82b4712d0c34da9997e348f8e1bd0b_kxrifb',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/7697D372-C3FA-44F3-87E1-107FF210798D_dj3jcu',
         description: '📝 禁止下载并传播',
         meta: '📍 拍摄时间：未知<br>⏱️ 视频时长：约15秒'
     },
     {
         type: 'video',
-        title: '🎬 傻B玩意儿',
+        title: '企鹅你TM就是个傻B玩意儿',
         date: '20260717',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/copy_F77D8B89-ECE2-44DD-B594-04BE6F4E42B5_dwo2lm',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/62D059BD-0D41-4529-ADD3-39BD482566DF_xdkry2',
         description: '📝 禁止下载并传播',
         meta: '📍 拍摄时间：未知<br>⏱️ 视频时长：约15秒'
     },
@@ -102,7 +102,7 @@ window.publishData = [
         title: '🎬 特郎普宣布加入中国共产党！',
         date: 'unknown',
         poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
-        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/d1c48526107fe45b0c04bcf1974c2012_mnsnl6',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/02ACCE79-8244-41AA-9794-8A35056E2F86_prbr5e',
         description: '📝 重磅炸弹，禁止下载并传播！',
         meta: '📍 拍摄时间：3335<br>⏱️ 视频时长：约15秒'
     },
