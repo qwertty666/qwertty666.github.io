@@ -1,6 +1,15 @@
 // publish-data.js
 // 近期发布 - 全部数据列表
 window.publishData = [
+      {
+        type: 'video',
+        title: '青天白日满地红',
+        date: '2026',
+        poster: 'https://res.cloudinary.com/dc6yzsom9/image/upload/q_auto,f_auto/IMG_0026_p8byzr',
+        src: 'https://res.cloudinary.com/dc6yzsom9/video/upload/q_auto,f_auto,vc_auto/snaptik_7531091675267992838_v3_bhmrxw',
+        description: '📝 禁止下载并传播！',
+        meta: '视频时长：186秒'
+    },
      {
         type: 'article',
         title: '东鹏控股周K详情',
